@@ -11,6 +11,7 @@ import manutencoesRoutes from "./routes/manutencoes";
 import emprestimosRoutes from "./routes/emprestimos";
 
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
 const app = express();
 

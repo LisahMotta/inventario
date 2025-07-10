@@ -8,6 +8,19 @@ import { eq } from "drizzle-orm";
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || "segredo_super_secreto";
 
+// GET /usuarios → lista todos os usuários
+router.get("/", async (req, res) => {
+  try {
+    console.log("Tentando buscar usuários...");
+    const lista = await db.select().from(usuarios);
+    console.log("Usuários encontrados:", lista.length);
+    res.json(lista);
+  } catch (error) {
+    console.error("Erro detalhado ao buscar usuários:", error);
+    res.status(500).json({ erro: "Erro ao buscar usuários", detalhes: String(error) });
+  }
+});
+
 // POST /usuarios → cadastro de novo usuário
 router.post("/", async (req, res) => {
   try {

@@ -14,6 +14,7 @@ const usuarios_1 = __importDefault(require("./routes/usuarios"));
 const manutencoes_1 = __importDefault(require("./routes/manutencoes"));
 const emprestimos_1 = __importDefault(require("./routes/emprestimos"));
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
+console.log("NODE_ENV:", process.env.NODE_ENV);
 const app = (0, express_1.default)();
 // Configurações do Express
 app.use((0, cors_1.default)());
