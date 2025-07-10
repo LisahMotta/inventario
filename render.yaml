@@ -2,7 +2,7 @@ services:
   - type: web
     name: inventario-backend
     env: node
-    buildCommand: echo "=== INICIANDO BUILD ===" && npm install && echo "=== NPM INSTALL CONCLUÍDO ===" && npm run build && echo "=== BUILD CONCLUÍDO ===" && ls -l && echo "=== LISTANDO DIST ===" && ls -l dist
+    buildCommand: npm install && cd frontend-manual && npm install && npm run build && cd .. && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
