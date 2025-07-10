@@ -27,7 +27,7 @@ app.use("/emprestimos", emprestimosRoutes);
 app.use(express.static(path.join(__dirname, "../frontend-manual/dist")));
 
 // Para todas as outras rotas, servir o index.html do React
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend-manual/dist/index.html"));
 });
 
