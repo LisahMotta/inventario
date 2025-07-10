@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
         res.status(500).json({ erro: "Erro ao cadastrar usuário" });
     }
 });
-// POST /login → autenticação
+// POST /usuarios/login → autenticação
 router.post("/login", async (req, res) => {
     try {
         const { nome, email, senha } = req.body;

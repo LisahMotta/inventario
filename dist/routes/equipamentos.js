@@ -16,7 +16,22 @@ router.get("/", async (req, res) => {
         res.status(500).json({ erro: "Erro ao buscar equipamentos" });
     }
 });
-// GET /equipamentos/:id → busca por ID
+// Endpoint para retornar o QR Code do equipamento (DEVE VIR ANTES DE /:id)
+router.get("/:id/qrcode", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const qr = await (0, qrcode_service_1.generateEquipmentQRCode)(id);
+        // qr é uma dataURL base64, precisamos extrair o base64
+        const base64Data = qr.replace(/^data:image\/png;base64,/, "");
+        const img = Buffer.from(base64Data, "base64");
+        res.type("image/png");
+        res.send(img);
+    }
+    catch (e) {
+        res.status(500).json({ error: "Erro ao gerar QR Code" });
+    }
+});
+// GET /equipamentos/:id → busca por ID (DEVE VIR DEPOIS DE /:id/qrcode)
 router.get("/:id", async (req, res) => {
     try {
         const id = parseInt(req.params.id);
@@ -70,21 +85,6 @@ router.delete("/:id", async (req, res) => {
     }
     catch (error) {
         res.status(500).json({ erro: "Erro ao deletar equipamento" });
-    }
-});
-// Endpoint para retornar o QR Code do equipamento
-router.get("/:id/qrcode", async (req, res) => {
-    const { id } = req.params;
-    try {
-        const qr = await (0, qrcode_service_1.generateEquipmentQRCode)(id);
-        // qr é uma dataURL base64, precisamos extrair o base64
-        const base64Data = qr.replace(/^data:image\/png;base64,/, "");
-        const img = Buffer.from(base64Data, "base64");
-        res.type("image/png");
-        res.send(img);
-    }
-    catch (e) {
-        res.status(500).json({ error: "Erro ao gerar QR Code" });
     }
 });
 exports.default = router;
