@@ -154,23 +154,23 @@ const Emprestimos: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 800, margin: "40px auto" }}>
-      <h2>Empréstimos de Equipamentos</h2>
+      <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Empréstimos de Equipamentos</h1>
       <button onClick={exportarCSV} style={{ marginBottom: 8, marginRight: 8 }}>Exportar CSV</button>
       <button onClick={exportarPDF} style={{ marginBottom: 8 }}>Exportar PDF</button>
       <div style={{ marginBottom: 16 }}>
-        <label>Status: </label>
+        <label style={{ color: "#fff", fontWeight: "bold" }}>Status: </label>
         <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)} style={{ marginRight: 8 }}>
           <option value="">Todos</option>
           <option value="emprestado">Emprestado</option>
           <option value="devolvido">Devolvido</option>
         </select>
-        <label>Equipamento: </label>
+        <label style={{ color: "#fff", fontWeight: "bold" }}>Equipamento: </label>
         <input type="number" value={filtroEquipamento} onChange={e => setFiltroEquipamento(e.target.value)} placeholder="ID do Equipamento" style={{ width: 120, marginRight: 8 }} />
-        <label>Usuário: </label>
+        <label style={{ color: "#fff", fontWeight: "bold" }}>Usuário: </label>
         <input type="number" value={filtroUsuario} onChange={e => setFiltroUsuario(e.target.value)} placeholder="ID do Usuário" style={{ width: 120, marginRight: 8 }} />
-        <label>Data início: </label>
+        <label style={{ color: "#fff", fontWeight: "bold" }}>Data início: </label>
         <input type="date" value={filtroDataInicio} onChange={e => setFiltroDataInicio(e.target.value)} style={{ marginRight: 8 }} />
-        <label>Data fim: </label>
+        <label style={{ color: "#fff", fontWeight: "bold" }}>Data fim: </label>
         <input type="date" value={filtroDataFim} onChange={e => setFiltroDataFim(e.target.value)} style={{ marginRight: 8 }} />
       </div>
       <form onSubmit={handleSubmit} style={{ marginBottom: 24, border: "1px solid #ccc", padding: 16, borderRadius: 8 }}>
@@ -180,38 +180,38 @@ const Emprestimos: React.FC = () => {
           <input name="data_emprestimo" type="datetime-local" value={form.data_emprestimo} onChange={handleChange} required style={{ flex: 1 }} />
         </div>
         <textarea name="observacoes" placeholder="Observações" value={form.observacoes} onChange={handleChange} style={{ width: "100%", marginTop: 8 }} />
-        <button type="submit" disabled={loading} style={{ marginTop: 8 }}>
+        <button type="submit" disabled={loading} style={{ marginTop: 8, backgroundColor: "#007bff", color: "#fff", padding: "8px 16px", borderRadius: 5, border: "none", cursor: "pointer", fontWeight: "bold", boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
           {loading ? "Salvando..." : "Registrar Empréstimo"}
         </button>
-        {erro && <div style={{ color: "red", marginTop: 10 }}>{erro}</div>}
-        {sucesso && <div style={{ color: "green", marginTop: 10 }}>{sucesso}</div>}
+        {erro && <div style={{ color: "red", marginTop: 10, fontWeight: "bold" }}>{erro}</div>}
+        {sucesso && <div style={{ color: "green", marginTop: 10, fontWeight: "bold" }}>{sucesso}</div>}
       </form>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Equipamento</th>
-            <th>Usuário</th>
-            <th>Data Empréstimo</th>
-            <th>Data Devolução</th>
-            <th>Status</th>
-            <th>Observações</th>
-            <th>Ações</th>
+            <th style={{ color: "#fff", fontWeight: "bold" }}>ID</th>
+            <th style={{ color: "#fff", fontWeight: "bold" }}>Equipamento</th>
+            <th style={{ color: "#fff", fontWeight: "bold" }}>Usuário</th>
+            <th style={{ color: "#fff", fontWeight: "bold" }}>Data Empréstimo</th>
+            <th style={{ color: "#fff", fontWeight: "bold" }}>Data Devolução</th>
+            <th style={{ color: "#fff", fontWeight: "bold" }}>Status</th>
+            <th style={{ color: "#fff", fontWeight: "bold" }}>Observações</th>
+            <th style={{ color: "#fff", fontWeight: "bold" }}>Ações</th>
           </tr>
         </thead>
         <tbody>
           {emprestimosFiltrados.map(e => (
             <tr key={e.id}>
-              <td>{e.id}</td>
-              <td>{e.equipamento_id}</td>
-              <td>{e.usuario_id}</td>
-              <td>{e.data_emprestimo ? new Date(e.data_emprestimo).toLocaleString() : ""}</td>
-              <td>{e.data_devolucao ? new Date(e.data_devolucao).toLocaleString() : ""}</td>
-              <td>{e.status}</td>
-              <td>{e.observacoes}</td>
+              <td style={{ color: "#fff" }}>{e.id}</td>
+              <td style={{ color: "#fff" }}>{e.equipamento_id}</td>
+              <td style={{ color: "#fff" }}>{e.usuario_id}</td>
+              <td style={{ color: "#fff" }}>{e.data_emprestimo ? new Date(e.data_emprestimo).toLocaleString() : ""}</td>
+              <td style={{ color: "#fff" }}>{e.data_devolucao ? new Date(e.data_devolucao).toLocaleString() : ""}</td>
+              <td style={{ color: "#fff" }}>{e.status}</td>
+              <td style={{ color: "#fff" }}>{e.observacoes}</td>
               <td>
                 {e.status === "emprestado" && (
-                  <button onClick={() => handleDevolver(e.id)} style={{ color: "green" }}>Registrar Devolução</button>
+                  <button onClick={() => handleDevolver(e.id)} style={{ color: "green", backgroundColor: "#28a745", padding: "5px 10px", borderRadius: 5, border: "none", cursor: "pointer", fontWeight: "bold", boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>Registrar Devolução</button>
                 )}
               </td>
             </tr>

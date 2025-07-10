@@ -85,20 +85,20 @@ const Equipamentos: React.FC = () => {
   });
 
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto" }}>
-      <h2>Equipamentos</h2>
+    <div style={{ maxWidth: 900, margin: "40px auto" }}>
+      <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Equipamentos</h1>
       <div style={{ marginBottom: 16 }}>
         <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar (tipo, marca, modelo, tombo, status, observações)" style={{ width: 300, marginRight: 8 }} />
-        <label>Status: </label>
+        <label style={{ color: '#fff', fontWeight: 'bold' }}>Status: </label>
         <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)} style={{ marginRight: 8 }}>
           <option value="">Todos</option>
           <option value="disponível">Disponível</option>
           <option value="emprestado">Emprestado</option>
           <option value="manutenção">Manutenção</option>
         </select>
-        <label>Tipo: </label>
+        <label style={{ color: '#fff', fontWeight: 'bold' }}>Tipo: </label>
         <input value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)} placeholder="Tipo" style={{ width: 100, marginRight: 8 }} />
-        <label>Marca: </label>
+        <label style={{ color: '#fff', fontWeight: 'bold' }}>Marca: </label>
         <input value={filtroMarca} onChange={e => setFiltroMarca(e.target.value)} placeholder="Marca" style={{ width: 100 }} />
       </div>
       <form onSubmit={handleSubmit} style={{ marginBottom: 24, border: "1px solid #ccc", padding: 16, borderRadius: 8 }}>
@@ -114,37 +114,39 @@ const Equipamentos: React.FC = () => {
           </select>
         </div>
         <textarea name="observacoes" placeholder="Observações" value={form.observacoes} onChange={handleChange} style={{ width: "100%", marginTop: 8 }} />
-        <button type="submit" disabled={loading} style={{ marginTop: 8 }}>
+        <button type="submit" disabled={loading} style={{ marginTop: 8, backgroundColor: '#007bff', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
           {loading ? "Salvando..." : "Cadastrar"}
         </button>
-        {erro && <div style={{ color: "red", marginTop: 10 }}>{erro}</div>}
-        {sucesso && <div style={{ color: "green", marginTop: 10 }}>{sucesso}</div>}
+        {erro && <div style={{ color: "red", marginTop: 10, fontWeight: 'bold', textShadow: '0 1px 2px #000' }}>{erro}</div>}
+        {sucesso && <div style={{ color: "green", marginTop: 10, fontWeight: 'bold', textShadow: '0 1px 2px #000' }}>{sucesso}</div>}
       </form>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Tipo</th>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>Tombo</th>
-            <th>Status</th>
-            <th>Observações</th>
-            <th>Ações</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>ID</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Tipo</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Marca</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Modelo</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Tombo</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Status</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Observações</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Ações</th>
           </tr>
         </thead>
         <tbody>
           {equipamentosFiltrados.map(eq => (
             <tr key={eq.id}>
-              <td>{eq.id}</td>
-              <td>{eq.tipo}</td>
-              <td>{eq.marca}</td>
-              <td>{eq.modelo}</td>
-              <td>{eq.tombo}</td>
-              <td>{eq.status}</td>
-              <td>{eq.observacoes}</td>
+              <td style={{ color: '#fff' }}>{eq.id}</td>
+              <td style={{ color: '#fff' }}>{eq.tipo}</td>
+              <td style={{ color: '#fff' }}>{eq.marca}</td>
+              <td style={{ color: '#fff' }}>{eq.modelo}</td>
+              <td style={{ color: '#fff' }}>{eq.tombo}</td>
+              <td style={{ color: '#fff' }}>{eq.status}</td>
+              <td style={{ color: '#fff' }}>{eq.observacoes}</td>
               <td>
-                <button onClick={() => setDetalheId(eq.id)}>Ver histórico</button>
+                <button onClick={() => setDetalheId(eq.id)} style={{ backgroundColor: '#6c757d', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', transition: 'background-color 0.3s ease, box-shadow 0.3s ease' }}>
+                  Ver histórico
+                </button>
               </td>
             </tr>
           ))}

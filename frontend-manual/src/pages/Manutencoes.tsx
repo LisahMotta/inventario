@@ -130,22 +130,22 @@ const Manutencoes: React.FC = () => {
   });
 
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto" }}>
-      <h2>Equipamentos em Manutenção</h2>
+    <div style={{ maxWidth: 900, margin: "40px auto" }}>
+      <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Manutenções</h1>
       <button onClick={exportarCSV} style={{ marginBottom: 8, marginRight: 8 }}>Exportar CSV</button>
       <button onClick={exportarPDF} style={{ marginBottom: 8 }}>Exportar PDF</button>
       <div style={{ marginBottom: 16 }}>
         <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar (marca, modelo, defeito, status, observações, equipamento)" style={{ width: 300, marginRight: 8 }} />
-        <label>Status: </label>
+        <label style={{ color: '#fff', fontWeight: 'bold' }}>Status: </label>
         <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)} style={{ marginRight: 8 }}>
           <option value="">Todos</option>
           <option value="pendente">Pendente</option>
           <option value="em andamento">Em andamento</option>
           <option value="concluída">Concluída</option>
         </select>
-        <label>Defeito: </label>
+        <label style={{ color: '#fff', fontWeight: 'bold' }}>Defeito: </label>
         <input value={filtroDefeito} onChange={e => setFiltroDefeito(e.target.value)} placeholder="Buscar defeito" style={{ marginRight: 8 }} />
-        <label>Equipamento: </label>
+        <label style={{ color: '#fff', fontWeight: 'bold' }}>Equipamento: </label>
         <input type="number" value={filtroEquipamento} onChange={e => setFiltroEquipamento(e.target.value)} placeholder="ID do Equipamento" style={{ width: 120, marginRight: 8 }} />
       </div>
       <form onSubmit={handleSubmit} style={{ marginBottom: 24, border: "1px solid #ccc", padding: 16, borderRadius: 8 }}>
@@ -171,14 +171,14 @@ const Manutencoes: React.FC = () => {
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Equipamento</th>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>Quantidade</th>
-            <th>Defeito</th>
-            <th>Status</th>
-            <th>Observações</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>ID</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Equipamento</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Marca</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Modelo</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Quantidade</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Defeito</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Status</th>
+            <th style={{ color: '#fff', fontWeight: 'bold' }}>Observações</th>
           </tr>
         </thead>
         <tbody>

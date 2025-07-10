@@ -15,9 +15,31 @@ interface Agendamento {
 }
 
 const turnos = ["Manhã", "Tarde", "Noite"];
+// Definir turmas para cada período conforme solicitado
+const turmasManha = [
+  "6º Ano A", "6º Ano B",
+  "7º Ano A", "7º Ano B",
+  "8º Ano A", "8º Ano B", "8º Ano C",
+  "9º Ano A", "9º Ano B", "9º Ano C",
+  "1ª série A", "1ª série B"
+];
+const turmasTarde = [
+  "1º Ano A", "1º Ano B", "1º Ano C",
+  "2º Ano A", "2º Ano B", "2º Ano C",
+  "3º Ano A", "3º Ano B",
+  "4º Ano A", "4º Ano B",
+  "5º Ano A", "5º Ano B"
+];
+const turmasNoite = [
+  "1ª série C", "1ª série D",
+  "2ª série", "3ª série"
+];
+
+// Atualizar lista de turmas para seleção
 const turmas = [
-  ...Array.from({ length: 9 }, (_, i) => `${i + 1}º Ano`),
-  "Ensino Médio"
+  ...turmasManha,
+  ...turmasTarde,
+  ...turmasNoite
 ];
 
 const horariosAulas: Record<string, { label: string; inicio: string; fim: string; intervalo?: boolean }[]> = {
@@ -54,6 +76,20 @@ function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
 
+// Adicionar função para obter dias úteis (segunda a sexta) da semana atual
+function getWeekdaysOfWeek(offset = 0) {
+  const today = new Date();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - today.getDay() + 1 + offset * 7);
+  const days = [];
+  for (let i = 0; i < 5; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    days.push(d);
+  }
+  return days;
+}
+
 const Agendamentos: React.FC = () => {
   const today = new Date();
   const [ano, setAno] = useState(today.getFullYear());
@@ -82,7 +118,10 @@ const Agendamentos: React.FC = () => {
   const [filtroTurma, setFiltroTurma] = useState("");
   const [filtroTurno, setFiltroTurno] = useState("");
 
-  const diasNoMes = getDaysInMonth(ano, mes);
+  // Adicionar estado para controlar a semana exibida
+  const [semanaOffset, setSemanaOffset] = useState(0);
+
+  const diasSemana = getWeekdaysOfWeek(semanaOffset);
 
   const fetchAgendamentos = async () => {
     const resp = await fetch("http://localhost:3000/agendamentos");
@@ -106,7 +145,34 @@ const Agendamentos: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    let novoForm = { ...form, [name]: value };
+    // Se mudar a turma para uma das do Ensino Médio, ajusta o turno automaticamente
+    if (name === "turma") {
+      if ([
+        "6º Ano A", "6º Ano B",
+        "7º Ano A", "7º Ano B",
+        "8º Ano A", "8º Ano B", "8º Ano C",
+        "9º Ano A", "9º Ano B", "9º Ano C",
+        "1ª série A", "1ª série B"
+      ].includes(value)) {
+        novoForm.turno = "Manhã";
+      } else if ([
+        "1º Ano A", "1º Ano B", "1º Ano C",
+        "2º Ano A", "2º Ano B", "2º Ano C",
+        "3º Ano A", "3º Ano B",
+        "4º Ano A", "4º Ano B",
+        "5º Ano A", "5º Ano B"
+      ].includes(value)) {
+        novoForm.turno = "Tarde";
+      } else if ([
+        "1ª série C", "1ª série D",
+        "2ª série", "3ª série"
+      ].includes(value)) {
+        novoForm.turno = "Noite";
+      }
+    }
+    setForm(novoForm);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -265,21 +331,22 @@ const Agendamentos: React.FC = () => {
     const dataOk = (!filtroDataInicio || d >= new Date(filtroDataInicio)) && (!filtroDataFim || d <= new Date(filtroDataFim));
     const statusOk = !filtroStatus || a.status === filtroStatus;
     const turmaOk = !filtroTurma || a.turma === filtroTurma;
-    const turnoOk = !filtroTurno || a.turno === filtroTurno;
+    // Mostrar apenas agendamentos do turno selecionado no formulário
+    const turnoOk = !form.turno || a.turno === form.turno;
     const filtroEquip = filtroEquipamento.trim() ? a.equipamento_id === Number(filtroEquipamento) : true;
     return buscaOk && dataOk && statusOk && turmaOk && turnoOk && filtroEquip;
   });
 
   return (
     <div style={{ maxWidth: 900, margin: "40px auto" }}>
-      <h2>Agendamentos</h2>
+      <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Agendamentos</h1>
       <div style={{ marginBottom: 8 }}>
         <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar (turma, turno, aula, status, observações, equipamento)" style={{ width: 300, marginRight: 8 }} />
       </div>
       <button onClick={exportarCSV} style={{ marginBottom: 8, marginRight: 8 }}>Exportar CSV</button>
       <button onClick={exportarPDF} style={{ marginBottom: 8 }}>Exportar PDF</button>
       <div style={{ marginBottom: 16 }}>
-        <label>Filtrar por equipamento: </label>
+        <label style={{ color: '#fff', fontWeight: 600, textShadow: '0 1px 4px #000a' }}>Filtrar por equipamento: </label>
         <input type="number" value={filtroEquipamento} onChange={e => setFiltroEquipamento(e.target.value)} placeholder="ID do Equipamento" style={{ width: 120, marginRight: 16 }} />
         <label>Data início: </label>
         <input type="date" value={filtroDataInicio} onChange={e => setFiltroDataInicio(e.target.value)} style={{ marginRight: 8 }} />
@@ -327,13 +394,15 @@ const Agendamentos: React.FC = () => {
           </select>
           <select name="data" value={form.data} onChange={handleChange} style={{ flex: 1 }} required>
             <option value="">Dia</option>
-            {Array.from({ length: diasNoMes }, (_, i) => (
-              <option key={i + 1} value={String(i + 1).padStart(2, "0")}>{i + 1}</option>
+            {diasSemana.map(d => (
+              <option key={d.getDate()} value={String(d.getDate()).padStart(2, "0")}>{d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}</option>
             ))}
           </select>
         </div>
         <textarea name="observacoes" placeholder="Observações" value={form.observacoes} onChange={handleChange} style={{ width: "100%", marginTop: 8 }} />
-        <button type="submit" disabled={loading} style={{ marginTop: 8 }}>
+        <button type="submit" disabled={loading} style={{ marginTop: 8, background: '#2c5364', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 20px', fontWeight: 600, boxShadow: '0 2px 8px #0002', cursor: 'pointer', transition: 'background 0.2s' }}
+          onMouseOver={e => e.currentTarget.style.background = '#395b7a'}
+          onMouseOut={e => e.currentTarget.style.background = '#2c5364'}>
           {loading ? (editId ? "Salvando..." : "Agendando...") : (editId ? "Salvar edição" : "Agendar")}
         </button>
         {editId && (
@@ -341,27 +410,78 @@ const Agendamentos: React.FC = () => {
             Cancelar edição
           </button>
         )}
-        {erro && <div style={{ color: "red", marginTop: 10 }}>{erro}</div>}
-        {sucesso && <div style={{ color: "green", marginTop: 10 }}>{sucesso}</div>}
+        {erro && <div style={{ color: "#fff", background: "#ff4d4f", padding: 8, borderRadius: 6, marginTop: 10, textAlign: 'center', fontWeight: 600, textShadow: '0 1px 4px #000a' }}>{erro}</div>}
+        {sucesso && <div style={{ color: "#fff", background: "#52c41a", padding: 8, borderRadius: 6, marginTop: 10, textAlign: 'center', fontWeight: 600, textShadow: '0 1px 4px #000a' }}>{sucesso}</div>}
       </form>
-      <div style={{ marginBottom: 16 }}>
-        <button onClick={() => setMes(m => m === 0 ? 11 : m - 1)}>&lt; Mês anterior</button>
-        <span style={{ margin: "0 16px" }}>{today.toLocaleString('pt-BR', { month: 'long' })} {ano}</span>
-        <button onClick={() => setMes(m => m === 11 ? 0 : m + 1)}>Próximo mês &gt;</button>
+      <div style={{ marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
+        <button
+          onClick={() => setSemanaOffset(s => s - 1)}
+          style={{
+            background: "#f0f4ff",
+            border: "none",
+            borderRadius: 20,
+            padding: "8px 18px",
+            fontSize: 18,
+            boxShadow: "0 2px 8px #0001",
+            cursor: "pointer",
+            transition: "background 0.2s",
+            color: "#2c5364"
+          }}
+          onMouseOver={e => e.currentTarget.style.background = "#dbeafe"}
+          onMouseOut={e => e.currentTarget.style.background = "#f0f4ff"}
+          title="Semana anterior"
+        >
+          &#8592; Semana anterior
+        </button>
+        <span style={{
+          margin: "0 16px",
+          fontWeight: 700,
+          fontSize: 22,
+          color: "#fff",
+          letterSpacing: 1,
+          textShadow: '0 2px 8px #0008'
+        }}>
+          {diasSemana[0].toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} - {diasSemana[4].toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+        </span>
+        <button
+          onClick={() => setSemanaOffset(s => s + 1)}
+          style={{
+            background: "#f0f4ff",
+            border: "none",
+            borderRadius: 20,
+            padding: "8px 18px",
+            fontSize: 18,
+            boxShadow: "0 2px 8px #0001",
+            cursor: "pointer",
+            transition: "background 0.2s",
+            color: "#2c5364"
+          }}
+          onMouseOver={e => e.currentTarget.style.background = "#dbeafe"}
+          onMouseOut={e => e.currentTarget.style.background = "#f0f4ff"}
+          title="Próxima semana"
+        >
+          Próxima semana &#8594;
+        </button>
       </div>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
-          <tr>
-            <th>Dia</th>
-            {turnos.map(turno => <th key={turno}>{turno}</th>)}
+          <tr style={{ background: 'rgba(44,83,100,0.7)' }}>
+            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>ID</th>
+            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Equipamento</th>
+            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Usuário</th>
+            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Data Empréstimo</th>
+            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Data Devolução</th>
+            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Status</th>
+            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Observações</th>
+            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: diasNoMes }, (_, i) => {
-            const dia = i + 1;
+          {Array.from({ length: diasSemana.length }, (_, i) => {
+            const dia = diasSemana[i].getDate();
             return (
               <tr key={dia}>
-                <td>{dia}</td>
+                <td>{diasSemana[i].toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}</td>
                 {turnos.map(turno => {
                   const aulas = horariosAulas[turno].filter(a => !a.intervalo);
                   return (

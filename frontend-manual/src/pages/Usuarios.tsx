@@ -69,7 +69,7 @@ const Usuarios: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 600, margin: "40px auto" }}>
-      <h2>Usuários</h2>
+      <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Usuários</h1>
       <form onSubmit={handleSubmit} style={{ marginBottom: 24, border: "1px solid #ccc", padding: 16, borderRadius: 8 }}>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <input name="nome" placeholder="Nome" value={form.nome} onChange={handleChange} required style={{ flex: 1 }} />

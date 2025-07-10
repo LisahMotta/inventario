@@ -21,6 +21,7 @@ const Login: React.FC = () => {
   const [cadastro, setCadastro] = useState(false);
   const [nome, setNome] = useState("");
   const [tipo, setTipo] = useState("");
+  const [usuario, setUsuario] = useState(""); // Novo estado para nome ou email
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,10 +29,14 @@ const Login: React.FC = () => {
     setSucesso("");
     setLoading(true);
     try {
+      // Envia como email se tiver @, senão como nome
+      const payload = usuario.includes("@")
+        ? { email: usuario, senha }
+        : { nome: usuario, senha };
       const resp = await fetch("http://localhost:3000/usuarios/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, senha }),
+        body: JSON.stringify(payload),
       });
       const data = await resp.json();
       if (resp.ok && data.token) {
@@ -94,12 +99,13 @@ const Login: React.FC = () => {
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: 12 }}>
-                <label>Email:</label>
+                <label>Nome ou Email:</label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  type="text"
+                  value={usuario}
+                  onChange={e => setUsuario(e.target.value)}
                   required
+                  placeholder="Digite seu nome ou email"
                   style={{ width: "100%", padding: 8 }}
                 />
               </div>

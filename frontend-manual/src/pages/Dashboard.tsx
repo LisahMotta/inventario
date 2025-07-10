@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
       }
     }, 60000); // checa a cada minuto
     return () => clearInterval(interval);
-  }, [agendamentos]);
+  }, []);
 
   const total = equipamentos.length;
   const disponiveis = equipamentos.filter(e => e.status === "disponível").length;
@@ -181,51 +181,10 @@ const Dashboard: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 600, margin: "40px auto" }}>
-      <h2>Dashboard</h2>
-      {/* Alertas */}
-      <div style={{ marginBottom: 24 }}>
-        {agendamentosProximos.length > 0 && (
-          <div style={{ background: "#fffbe0", border: "1px solid #ffe066", padding: 12, borderRadius: 6, marginBottom: 8 }}>
-            <b>Agendamentos próximos:</b>
-            <ul>
-              {agendamentosProximos.map(a => (
-                <li key={a.id}>
-                  Equipamento {a.equipamento_id} - {a.turma} {a.turno} {a.aula} em {new Date(a.data_inicio).toLocaleString()}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {emprestimosPendentes.length > 0 && (
-          <div style={{ background: "#ffe0e0", border: "1px solid #ff6666", padding: 12, borderRadius: 6, marginBottom: 8 }}>
-            <b>Devoluções pendentes:</b>
-            <ul>
-              {emprestimosPendentes.map(e => (
-                <li key={e.id}>
-                  Equipamento {e.equipamento_id} - Usuário {e.usuario_id} (Empréstimo em {new Date(e.data_emprestimo).toLocaleDateString()})
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {manutencoesPendentes.length > 0 && (
-          <div style={{ background: "#e0e0ff", border: "1px solid #6666ff", padding: 12, borderRadius: 6 }}>
-            <b>Manutenções pendentes/agendadas:</b>
-            <ul>
-              {manutencoesPendentes.map(m => (
-                <li key={m.id}>
-                  Equipamento {m.equipamento_id} - {m.descricao} ({m.status}) em {new Date(m.data_manutencao).toLocaleDateString()}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {agendamentosProximos.length === 0 && emprestimosPendentes.length === 0 && manutencoesPendentes.length === 0 && (
-          <div style={{ background: "#e0ffe0", border: "1px solid #66ff66", padding: 12, borderRadius: 6 }}>
-            Nenhum alerta no momento.
-          </div>
-        )}
-      </div>
+      <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 8, textShadow: '0 2px 8px #0008', fontSize: 32, fontWeight: 700 }}>Inventário e Controle de Equipamentos</h1>
+      <p style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #0008', fontSize: 20, fontWeight: 500 }}>Bem-vindo ao sistema!</p>
+      <h2 style={{ color: '#fff', textAlign: 'center', textShadow: '0 2px 8px #0008' }}>Dashboard</h2>
+      {/* Alertas removidos */}
       {loading ? (
         <p>Carregando...</p>
       ) : (

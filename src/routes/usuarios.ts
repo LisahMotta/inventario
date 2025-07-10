@@ -30,11 +30,16 @@ router.post("/", async (req, res) => {
 // POST /login → autenticação
 router.post("/login", async (req, res) => {
   try {
-    const { email, senha } = req.body;
-    if (!email || !senha) {
-      return res.status(400).json({ erro: "Email e senha são obrigatórios" });
+    const { nome, email, senha } = req.body;
+    if ((!email && !nome) || !senha) {
+      return res.status(400).json({ erro: "Nome ou email e senha são obrigatórios" });
     }
-    const resultado = await db.select().from(usuarios).where(eq(usuarios.email, email));
+    let resultado;
+    if (email) {
+      resultado = await db.select().from(usuarios).where(eq(usuarios.email, email));
+    } else {
+      resultado = await db.select().from(usuarios).where(eq(usuarios.nome, nome));
+    }
     const usuario = resultado[0];
     if (!usuario) {
       return res.status(401).json({ erro: "Usuário ou senha inválidos" });
@@ -43,9 +48,10 @@ router.post("/login", async (req, res) => {
     if (!senhaConfere) {
       return res.status(401).json({ erro: "Usuário ou senha inválidos" });
     }
-    const token = jwt.sign({ id: usuario.id, nome: usuario.nome, email: usuario.email }, JWT_SECRET, { expiresIn: "8h" });
+    const token = jwt.sign({ id: usuario.id, nome: usuario.nome, email: usuario.email, tipo: usuario.tipo }, JWT_SECRET, { expiresIn: "8h" });
     res.json({ token });
   } catch (error) {
+    console.error("Erro detalhado ao fazer login:", error);
     res.status(500).json({ erro: "Erro ao fazer login" });
   }
 });

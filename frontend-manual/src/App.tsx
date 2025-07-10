@@ -23,9 +23,10 @@ const App: React.FC = () => {
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0f2027 0%, #2c5364 100%)',
-        backgroundImage: `url('https://www.transparenttextures.com/patterns/circuit-board.png'), linear-gradient(135deg, #0f2027 0%, #2c5364 100%)`,
-        backgroundRepeat: 'repeat',
+        background: `linear-gradient(135deg, #0f2027cc 0%, #2c5364cc 100%), url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1500&q=80')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -40,9 +41,10 @@ const App: React.FC = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0f2027 0%, #2c5364 100%)',
-      backgroundImage: `url('https://www.transparenttextures.com/patterns/circuit-board.png'), linear-gradient(135deg, #0f2027 0%, #2c5364 100%)`,
-      backgroundRepeat: 'repeat',
+      background: `linear-gradient(135deg, #0f2027cc 0%, #2c5364cc 100%), url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1500&q=80')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'stretch',
