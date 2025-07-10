@@ -2,7 +2,7 @@ services:
   - type: web
     name: inventario-backend
     env: node
-    buildCommand: npm install && cd frontend-manual && npm install && npm run build && cd .. && npm run build
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
