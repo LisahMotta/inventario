@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 interface Equipamento {
   id: number;
@@ -39,7 +40,10 @@ interface Emprestimo {
   observacoes?: string;
 }
 
-const EquipamentoDetalhe: React.FC<{ equipamentoId: number; onVoltar: () => void }> = ({ equipamentoId, onVoltar }) => {
+const EquipamentoDetalhe: React.FC = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const equipamentoId = Number(id);
   const [equipamento, setEquipamento] = useState<Equipamento | null>(null);
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [manutencoes, setManutencoes] = useState<Manutencao[]>([]);
@@ -74,7 +78,7 @@ const EquipamentoDetalhe: React.FC<{ equipamentoId: number; onVoltar: () => void
 
   return (
     <div style={{ maxWidth: 900, margin: "40px auto" }}>
-      <button onClick={onVoltar} style={{ marginBottom: 16 }}>&larr; Voltar</button>
+      <button onClick={() => navigate(-1)} style={{ marginBottom: 16 }}>&larr; Voltar</button>
       <h2>Detalhes do Equipamento</h2>
       {qr && (
         <div style={{ marginBottom: 24, textAlign: "center" }}>

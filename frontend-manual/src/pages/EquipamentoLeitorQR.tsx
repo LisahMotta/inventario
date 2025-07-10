@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BarcodeScanner from "react-qr-barcode-scanner";
 
-const EquipamentoLeitorQR: React.FC<{ onEncontrar?: (id: string) => void }> = ({ onEncontrar }) => {
+const EquipamentoLeitorQR: React.FC = () => {
   const [data, setData] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleScan = (result: any) => {
     if (result && result.text) {
@@ -13,8 +15,7 @@ const EquipamentoLeitorQR: React.FC<{ onEncontrar?: (id: string) => void }> = ({
       const match = result.text.match(/equipamentos\/(\d+)/);
       if (match) {
         const id = match[1];
-        if (onEncontrar) onEncontrar(id);
-        else window.location.href = `/equipamento/${id}`;
+        navigate(`/equipamento/${id}`);
       }
     }
   };

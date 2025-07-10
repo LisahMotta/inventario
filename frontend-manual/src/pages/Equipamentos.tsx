@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import EquipamentoDetalhe from "./EquipamentoDetalhe";
+import { useNavigate } from "react-router-dom";
 
 interface Equipamento {
   id: number;
@@ -30,6 +31,8 @@ const Equipamentos: React.FC = () => {
   const [filtroStatus, setFiltroStatus] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
+
+  const navigate = useNavigate();
 
   const fetchEquipamentos = async () => {
     const resp = await fetch("http://localhost:3000/equipamentos");
@@ -70,10 +73,6 @@ const Equipamentos: React.FC = () => {
       setLoading(false);
     }
   };
-
-  if (detalheId !== null) {
-    return <EquipamentoDetalhe equipamentoId={detalheId} onVoltar={() => setDetalheId(null)} />;
-  }
 
   // Filtro avançado
   const equipamentosFiltrados = equipamentos.filter(eq => {
@@ -144,7 +143,7 @@ const Equipamentos: React.FC = () => {
               <td style={{ color: '#fff' }}>{eq.status}</td>
               <td style={{ color: '#fff' }}>{eq.observacoes}</td>
               <td>
-                <button onClick={() => setDetalheId(eq.id)} style={{ backgroundColor: '#6c757d', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', transition: 'background-color 0.3s ease, box-shadow 0.3s ease' }}>
+                <button onClick={() => navigate(`/equipamento/${eq.id}`)} style={{ backgroundColor: '#6c757d', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', transition: 'background-color 0.3s ease, box-shadow 0.3s ease' }}>
                   Ver histórico
                 </button>
               </td>
