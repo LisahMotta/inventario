@@ -34,8 +34,11 @@ const Manutencoes: React.FC = () => {
   const [filtroDefeito, setFiltroDefeito] = useState("");
   const [filtroEquipamento, setFiltroEquipamento] = useState("");
 
+  // @ts-ignore
+  const API_URL = import.meta.env.VITE_API_URL || "";
+
   const fetchManutencoes = async () => {
-    const resp = await fetch("http://localhost:3000/manutencoes");
+    const resp = await fetch(`${API_URL}/manutencoes`);
     const data = await resp.json();
     setManutencoes(data);
   };
@@ -54,7 +57,7 @@ const Manutencoes: React.FC = () => {
     setSucesso("");
     setLoading(true);
     try {
-      const resp = await fetch("http://localhost:3000/manutencoes", {
+      const resp = await fetch(`${API_URL}/manutencoes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

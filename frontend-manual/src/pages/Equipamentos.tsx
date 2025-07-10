@@ -34,8 +34,11 @@ const Equipamentos: React.FC = () => {
 
   const navigate = useNavigate();
 
+  // @ts-ignore
+  const API_URL = import.meta.env.VITE_API_URL || "";
+
   const fetchEquipamentos = async () => {
-    const resp = await fetch("http://localhost:3000/equipamentos");
+    const resp = await fetch(`${API_URL}/equipamentos`);
     const data = await resp.json();
     setEquipamentos(data);
   };
@@ -54,7 +57,7 @@ const Equipamentos: React.FC = () => {
     setSucesso("");
     setLoading(true);
     try {
-      const resp = await fetch("http://localhost:3000/equipamentos", {
+      const resp = await fetch(`${API_URL}/equipamentos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

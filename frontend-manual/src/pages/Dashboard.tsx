@@ -51,14 +51,17 @@ const Dashboard: React.FC = () => {
   const [manutencoes, setManutencoes] = useState<Manutencao[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // @ts-ignore
+  const API_URL = import.meta.env.VITE_API_URL || "";
+
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
       const [eq, ag, em, mn] = await Promise.all([
-        fetch("http://localhost:3000/equipamentos").then(r => r.json()),
-        fetch("http://localhost:3000/agendamentos").then(r => r.json()),
-        fetch("http://localhost:3000/emprestimos").then(r => r.json()),
-        fetch("http://localhost:3000/manutencoes").then(r => r.json()),
+        fetch(`${API_URL}/equipamentos`).then(r => r.json()),
+        fetch(`${API_URL}/agendamentos`).then(r => r.json()),
+        fetch(`${API_URL}/emprestimos`).then(r => r.json()),
+        fetch(`${API_URL}/manutencoes`).then(r => r.json()),
       ]);
       setEquipamentos(eq);
       setAgendamentos(ag);

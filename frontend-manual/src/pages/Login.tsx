@@ -23,6 +23,9 @@ const Login: React.FC = () => {
   const [tipo, setTipo] = useState("");
   const [usuario, setUsuario] = useState(""); // Novo estado para nome ou email
 
+  // @ts-ignore
+  const API_URL = import.meta.env.VITE_API_URL || "";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro("");
@@ -33,7 +36,7 @@ const Login: React.FC = () => {
       const payload = usuario.includes("@")
         ? { email: usuario, senha }
         : { nome: usuario, senha };
-      const resp = await fetch("http://localhost:3000/usuarios/login", {
+      const resp = await fetch(`${API_URL}/usuarios/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -60,7 +63,7 @@ const Login: React.FC = () => {
     setSucesso("");
     setLoading(true);
     try {
-      const resp = await fetch("http://localhost:3000/usuarios", {
+      const resp = await fetch(`${API_URL}/usuarios`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome, senha, tipo }),

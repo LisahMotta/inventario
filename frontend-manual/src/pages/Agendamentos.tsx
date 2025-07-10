@@ -123,8 +123,11 @@ const Agendamentos: React.FC = () => {
 
   const diasSemana = getWeekdaysOfWeek(semanaOffset);
 
+  // @ts-ignore
+  const API_URL = import.meta.env.VITE_API_URL || "";
+
   const fetchAgendamentos = async () => {
-    const resp = await fetch("http://localhost:3000/agendamentos");
+    const resp = await fetch(`${API_URL}/agendamentos`);
     const data = await resp.json();
     setAgendamentos(data);
   };
@@ -189,7 +192,7 @@ const Agendamentos: React.FC = () => {
       const data_fim = `${dataBase}T${aulaSelecionada.fim}:00.000Z`;
       let resp;
       if (editId) {
-        resp = await fetch(`http://localhost:3000/agendamentos/${editId}`, {
+        resp = await fetch(`${API_URL}/agendamentos/${editId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -204,7 +207,7 @@ const Agendamentos: React.FC = () => {
           }),
         });
       } else {
-        resp = await fetch("http://localhost:3000/agendamentos", {
+        resp = await fetch(`${API_URL}/agendamentos`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -255,7 +258,7 @@ const Agendamentos: React.FC = () => {
     setErro("");
     setSucesso("");
     try {
-      const resp = await fetch(`http://localhost:3000/agendamentos/${id}`, { method: "DELETE" });
+      const resp = await fetch(`${API_URL}/agendamentos/${id}`, { method: "DELETE" });
       if (resp.ok) {
         setSucesso("Agendamento excluído!");
         fetchAgendamentos();

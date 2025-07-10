@@ -14,6 +14,9 @@ const tipos = [
   "administrador"
 ];
 
+// @ts-ignore
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 const Usuarios: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [form, setForm] = useState({
@@ -26,7 +29,7 @@ const Usuarios: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const fetchUsuarios = async () => {
-    const resp = await fetch("http://localhost:3000/usuarios");
+    const resp = await fetch(`${API_URL}/usuarios`);
     if (resp.ok) {
       const data = await resp.json();
       setUsuarios(data);
@@ -47,7 +50,7 @@ const Usuarios: React.FC = () => {
     setSucesso("");
     setLoading(true);
     try {
-      const resp = await fetch("http://localhost:3000/usuarios", {
+      const resp = await fetch(`${API_URL}/usuarios`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

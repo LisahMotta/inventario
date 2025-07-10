@@ -31,8 +31,11 @@ const Emprestimos: React.FC = () => {
   const [filtroDataInicio, setFiltroDataInicio] = useState("");
   const [filtroDataFim, setFiltroDataFim] = useState("");
 
+  // @ts-ignore
+  const API_URL = import.meta.env.VITE_API_URL || "";
+
   const fetchEmprestimos = async () => {
-    const resp = await fetch("http://localhost:3000/emprestimos");
+    const resp = await fetch(`${API_URL}/emprestimos`);
     const data = await resp.json();
     setEmprestimos(data);
   };
@@ -51,7 +54,7 @@ const Emprestimos: React.FC = () => {
     setSucesso("");
     setLoading(true);
     try {
-      const resp = await fetch("http://localhost:3000/emprestimos", {
+      const resp = await fetch(`${API_URL}/emprestimos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -80,7 +83,7 @@ const Emprestimos: React.FC = () => {
     setErro("");
     setSucesso("");
     try {
-      const resp = await fetch(`http://localhost:3000/emprestimos/${id}/devolver`, {
+      const resp = await fetch(`${API_URL}/emprestimos/${id}/devolver`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ data_devolucao: new Date().toISOString() }),

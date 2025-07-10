@@ -51,21 +51,24 @@ const EquipamentoDetalhe: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [qr, setQr] = useState<string | null>(null);
 
+  // @ts-ignore
+  const API_URL = import.meta.env.VITE_API_URL || "";
+
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
       const [eq, ag, mn, em] = await Promise.all([
-        fetch(`http://localhost:3000/equipamentos/${equipamentoId}`).then(r => r.json()),
-        fetch(`http://localhost:3000/agendamentos`).then(r => r.json()),
-        fetch(`http://localhost:3000/manutencoes`).then(r => r.json()),
-        fetch(`http://localhost:3000/emprestimos`).then(r => r.json()),
+        fetch(`${API_URL}/equipamentos/${equipamentoId}`).then(r => r.json()),
+        fetch(`${API_URL}/agendamentos`).then(r => r.json()),
+        fetch(`${API_URL}/manutencoes`).then(r => r.json()),
+        fetch(`${API_URL}/emprestimos`).then(r => r.json()),
       ]);
       setEquipamento(eq);
       setAgendamentos(ag.filter((a: Agendamento) => a.equipamento_id === equipamentoId));
       setManutencoes(mn.filter((m: Manutencao) => m.equipamento_id === equipamentoId));
       setEmprestimos(em.filter((e: Emprestimo) => e.equipamento_id === equipamentoId));
       // Buscar QR Code
-      const qrRes = await fetch(`http://localhost:3000/equipamentos/${equipamentoId}/qrcode`);
+      const qrRes = await fetch(`${API_URL}/equipamentos/${equipamentoId}/qrcode`);
       const qrBlob = await qrRes.blob();
       setQr(URL.createObjectURL(qrBlob));
       setLoading(false);
