@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
-    "build": "tsc",
+    "build": "npm run build:frontend && tsc",
+    "build:frontend": "cd frontend-manual && npm install && npm run build",
     "start": "node dist/index.js",
     "drizzle:push": "drizzle-kit push",
     "drizzle:generate": "drizzle-kit generate"
