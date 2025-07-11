@@ -36,76 +36,101 @@ const testDatabaseConnection = async () => {
 
 const createTables = async () => {
   try {
-    console.log("Criando tabelas...");
-    // Importar todas as tabelas do schema
-    const { equipamentos, agendamentos, manutencoes, usuarios, emprestimos } = await import("./schema");
+    console.log("Criando tabelas usando Drizzle...");
     
-    // Criar tabelas usando Drizzle
-    await db.execute(`
-      CREATE TABLE IF NOT EXISTS usuarios (
-        id SERIAL PRIMARY KEY,
-        nome VARCHAR(100) NOT NULL,
-        email VARCHAR(255),
-        senha VARCHAR(255) NOT NULL,
-        tipo VARCHAR(50) NOT NULL,
-        criado_em TIMESTAMP DEFAULT NOW()
-      );
-    `);
+    // Usar o Drizzle para criar as tabelas baseado no schema
+    const { migrate } = await import("drizzle-orm/node-postgres/migrator");
+    const { drizzle } = await import("drizzle-orm/node-postgres");
+    const { Pool } = await import("pg");
     
-    await db.execute(`
-      CREATE TABLE IF NOT EXISTS equipamentos (
-        id SERIAL PRIMARY KEY,
-        tipo VARCHAR(100) NOT NULL,
-        marca VARCHAR(100) NOT NULL,
-        modelo VARCHAR(100) NOT NULL,
-        tombo VARCHAR(100) NOT NULL UNIQUE,
-        status VARCHAR(50) NOT NULL,
-        observacoes TEXT,
-        criado_em TIMESTAMP DEFAULT NOW()
-      );
-    `);
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
     
-    await db.execute(`
-      CREATE TABLE IF NOT EXISTS agendamentos (
-        id SERIAL PRIMARY KEY,
-        equipamento_id INTEGER NOT NULL,
-        data_inicio TIMESTAMP NOT NULL,
-        data_fim TIMESTAMP NOT NULL,
-        status VARCHAR(50) NOT NULL,
-        observacoes TEXT,
-        criado_em TIMESTAMP DEFAULT NOW()
-      );
-    `);
+    const dbForMigration = drizzle(pool);
     
-    await db.execute(`
-      CREATE TABLE IF NOT EXISTS manutencoes (
-        id SERIAL PRIMARY KEY,
-        equipamento_id INTEGER NOT NULL,
-        data_manutencao TIMESTAMP NOT NULL,
-        descricao TEXT NOT NULL,
-        responsavel VARCHAR(100),
-        status VARCHAR(50) NOT NULL,
-        observacoes TEXT,
-        criado_em TIMESTAMP DEFAULT NOW()
-      );
-    `);
+    // Executar migração
+    await migrate(dbForMigration, { migrationsFolder: "./drizzle" });
     
-    await db.execute(`
-      CREATE TABLE IF NOT EXISTS emprestimos (
-        id SERIAL PRIMARY KEY,
-        equipamento_id INTEGER NOT NULL,
-        usuario_id INTEGER NOT NULL,
-        data_emprestimo TIMESTAMP NOT NULL,
-        data_devolucao TIMESTAMP,
-        status VARCHAR(50) NOT NULL,
-        observacoes TEXT,
-        criado_em TIMESTAMP DEFAULT NOW()
-      );
-    `);
-    
-    console.log("Tabelas criadas com sucesso!");
+    console.log("Tabelas criadas com sucesso via Drizzle!");
   } catch (error) {
-    console.error("Erro ao criar tabelas:", error);
+    console.error("Erro ao criar tabelas com Drizzle:", error);
+    
+    // Fallback: criar tabelas manualmente
+    try {
+      console.log("Tentando criar tabelas manualmente...");
+      const { Pool } = await import("pg");
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+      
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS usuarios (
+          id SERIAL PRIMARY KEY,
+          nome VARCHAR(100) NOT NULL,
+          email VARCHAR(255),
+          senha VARCHAR(255) NOT NULL,
+          tipo VARCHAR(50) NOT NULL,
+          criado_em TIMESTAMP DEFAULT NOW()
+        );
+      `);
+      
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS equipamentos (
+          id SERIAL PRIMARY KEY,
+          tipo VARCHAR(100) NOT NULL,
+          marca VARCHAR(100) NOT NULL,
+          modelo VARCHAR(100) NOT NULL,
+          tombo VARCHAR(100) NOT NULL UNIQUE,
+          status VARCHAR(50) NOT NULL,
+          observacoes TEXT,
+          criado_em TIMESTAMP DEFAULT NOW()
+        );
+      `);
+      
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS agendamentos (
+          id SERIAL PRIMARY KEY,
+          equipamento_id INTEGER NOT NULL,
+          data_inicio TIMESTAMP NOT NULL,
+          data_fim TIMESTAMP NOT NULL,
+          status VARCHAR(50) NOT NULL,
+          observacoes TEXT,
+          criado_em TIMESTAMP DEFAULT NOW()
+        );
+      `);
+      
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS manutencoes (
+          id SERIAL PRIMARY KEY,
+          equipamento_id INTEGER NOT NULL,
+          data_manutencao TIMESTAMP NOT NULL,
+          descricao TEXT NOT NULL,
+          responsavel VARCHAR(100),
+          status VARCHAR(50) NOT NULL,
+          observacoes TEXT,
+          criado_em TIMESTAMP DEFAULT NOW()
+        );
+      `);
+      
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS emprestimos (
+          id SERIAL PRIMARY KEY,
+          equipamento_id INTEGER NOT NULL,
+          usuario_id INTEGER NOT NULL,
+          data_emprestimo TIMESTAMP NOT NULL,
+          data_devolucao TIMESTAMP,
+          status VARCHAR(50) NOT NULL,
+          observacoes TEXT,
+          criado_em TIMESTAMP DEFAULT NOW()
+        );
+      `);
+      
+      await pool.end();
+      console.log("Tabelas criadas manualmente com sucesso!");
+    } catch (manualError) {
+      console.error("Erro ao criar tabelas manualmente:", manualError);
+    }
   }
 };
 
