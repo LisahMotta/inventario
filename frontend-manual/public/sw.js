@@ -39,10 +39,16 @@ self.addEventListener('fetch', (event) => {
             // Clona a resposta
             const responseToCache = response.clone();
 
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
+            // Verificar se a requisição pode ser cacheada
+            if (event.request.url.startsWith('http') && !event.request.url.includes('chrome-extension')) {
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(event.request, responseToCache);
+                })
+                .catch((error) => {
+                  console.error('Erro ao cachear:', error);
+                });
+            }
 
             return response;
           })
