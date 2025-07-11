@@ -10,6 +10,8 @@ import Emprestimos from "./pages/Emprestimos";
 import EquipamentoLeitorQR from "./pages/EquipamentoLeitorQR";
 import EquipamentoDetalhe from "./pages/EquipamentoDetalhe";
 import { useAuth } from "./AuthContext";
+import { SyncProvider } from "./contexts/SyncContext";
+import SyncStatus from "./components/SyncStatus";
 
 const App: React.FC = () => {
   const { usuario, logout } = useAuth();
@@ -49,18 +51,19 @@ const App: React.FC = () => {
   };
   
   return (
-    <BrowserRouter>
-      <div style={{
-        minHeight: '100vh',
-        background: `linear-gradient(135deg, #0f2027cc 0%, #2c5364cc 100%), url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1500&q=80')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'stretch',
-        justifyContent: 'flex-start'
-      }}>
+    <SyncProvider>
+      <BrowserRouter>
+        <div style={{
+          minHeight: '100vh',
+          background: `linear-gradient(135deg, #0f2027cc 0%, #2c5364cc 100%), url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1500&q=80')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          justifyContent: 'flex-start'
+        }}>
         <nav style={{
   display: 'flex',
   gap: 12,
@@ -114,8 +117,10 @@ const App: React.FC = () => {
           <Route path="/leitorqr" element={<EquipamentoLeitorQR />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
+        <SyncStatus />
       </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </SyncProvider>
   );
 };
 
