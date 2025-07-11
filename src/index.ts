@@ -36,101 +36,84 @@ const testDatabaseConnection = async () => {
 
 const createTables = async () => {
   try {
-    console.log("Criando tabelas usando Drizzle...");
-    
-    // Usar o Drizzle para criar as tabelas baseado no schema
-    const { migrate } = await import("drizzle-orm/node-postgres/migrator");
-    const { drizzle } = await import("drizzle-orm/node-postgres");
+    console.log("Criando tabelas manualmente...");
     const { Pool } = await import("pg");
-    
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
     });
     
-    const dbForMigration = drizzle(pool);
+    console.log("Criando tabela usuarios...");
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id SERIAL PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        email VARCHAR(255),
+        senha VARCHAR(255) NOT NULL,
+        tipo VARCHAR(50) NOT NULL,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
     
-    // Executar migração
-    await migrate(dbForMigration, { migrationsFolder: "./drizzle" });
+    console.log("Criando tabela equipamentos...");
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS equipamentos (
+        id SERIAL PRIMARY KEY,
+        tipo VARCHAR(100) NOT NULL,
+        marca VARCHAR(100) NOT NULL,
+        modelo VARCHAR(100) NOT NULL,
+        tombo VARCHAR(100) NOT NULL UNIQUE,
+        status VARCHAR(50) NOT NULL,
+        observacoes TEXT,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
     
-    console.log("Tabelas criadas com sucesso via Drizzle!");
+    console.log("Criando tabela agendamentos...");
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS agendamentos (
+        id SERIAL PRIMARY KEY,
+        equipamento_id INTEGER NOT NULL,
+        data_inicio TIMESTAMP NOT NULL,
+        data_fim TIMESTAMP NOT NULL,
+        status VARCHAR(50) NOT NULL,
+        observacoes TEXT,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    
+    console.log("Criando tabela manutencoes...");
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS manutencoes (
+        id SERIAL PRIMARY KEY,
+        equipamento_id INTEGER NOT NULL,
+        data_manutencao TIMESTAMP NOT NULL,
+        descricao TEXT NOT NULL,
+        responsavel VARCHAR(100),
+        status VARCHAR(50) NOT NULL,
+        observacoes TEXT,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    
+    console.log("Criando tabela emprestimos...");
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS emprestimos (
+        id SERIAL PRIMARY KEY,
+        equipamento_id INTEGER NOT NULL,
+        usuario_id INTEGER NOT NULL,
+        data_emprestimo TIMESTAMP NOT NULL,
+        data_devolucao TIMESTAMP,
+        status VARCHAR(50) NOT NULL,
+        observacoes TEXT,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    
+    await pool.end();
+    console.log("Todas as tabelas criadas com sucesso!");
   } catch (error) {
-    console.error("Erro ao criar tabelas com Drizzle:", error);
-    
-    // Fallback: criar tabelas manualmente
-    try {
-      console.log("Tentando criar tabelas manualmente...");
-      const { Pool } = await import("pg");
-      const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-      });
-      
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS usuarios (
-          id SERIAL PRIMARY KEY,
-          nome VARCHAR(100) NOT NULL,
-          email VARCHAR(255),
-          senha VARCHAR(255) NOT NULL,
-          tipo VARCHAR(50) NOT NULL,
-          criado_em TIMESTAMP DEFAULT NOW()
-        );
-      `);
-      
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS equipamentos (
-          id SERIAL PRIMARY KEY,
-          tipo VARCHAR(100) NOT NULL,
-          marca VARCHAR(100) NOT NULL,
-          modelo VARCHAR(100) NOT NULL,
-          tombo VARCHAR(100) NOT NULL UNIQUE,
-          status VARCHAR(50) NOT NULL,
-          observacoes TEXT,
-          criado_em TIMESTAMP DEFAULT NOW()
-        );
-      `);
-      
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS agendamentos (
-          id SERIAL PRIMARY KEY,
-          equipamento_id INTEGER NOT NULL,
-          data_inicio TIMESTAMP NOT NULL,
-          data_fim TIMESTAMP NOT NULL,
-          status VARCHAR(50) NOT NULL,
-          observacoes TEXT,
-          criado_em TIMESTAMP DEFAULT NOW()
-        );
-      `);
-      
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS manutencoes (
-          id SERIAL PRIMARY KEY,
-          equipamento_id INTEGER NOT NULL,
-          data_manutencao TIMESTAMP NOT NULL,
-          descricao TEXT NOT NULL,
-          responsavel VARCHAR(100),
-          status VARCHAR(50) NOT NULL,
-          observacoes TEXT,
-          criado_em TIMESTAMP DEFAULT NOW()
-        );
-      `);
-      
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS emprestimos (
-          id SERIAL PRIMARY KEY,
-          equipamento_id INTEGER NOT NULL,
-          usuario_id INTEGER NOT NULL,
-          data_emprestimo TIMESTAMP NOT NULL,
-          data_devolucao TIMESTAMP,
-          status VARCHAR(50) NOT NULL,
-          observacoes TEXT,
-          criado_em TIMESTAMP DEFAULT NOW()
-        );
-      `);
-      
-      await pool.end();
-      console.log("Tabelas criadas manualmente com sucesso!");
-    } catch (manualError) {
-      console.error("Erro ao criar tabelas manualmente:", manualError);
-    }
+    console.error("Erro ao criar tabelas:", error);
+    throw error;
   }
 };
 
@@ -151,6 +134,18 @@ app.get("/health", async (req, res) => {
   } catch (error) {
     console.error("Health check failed:", error);
     res.status(500).json({ status: "ERROR", message: "Database connection failed", error: String(error) });
+  }
+});
+
+// Initialize database endpoint
+app.get("/init-db", async (req, res) => {
+  try {
+    console.log("Inicializando banco de dados...");
+    await createTables();
+    res.json({ status: "OK", message: "Database initialized successfully" });
+  } catch (error) {
+    console.error("Database initialization failed:", error);
+    res.status(500).json({ status: "ERROR", message: "Database initialization failed", error: String(error) });
   }
 });
 
