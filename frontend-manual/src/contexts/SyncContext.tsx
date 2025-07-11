@@ -34,16 +34,27 @@ export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
   // Verificar se o app está instalado
   useEffect(() => {
     const checkInstallation = () => {
+      // Verificar se está em modo standalone (app instalado)
       if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('App já está instalado');
         setIsInstalled(true);
+      } else {
+        console.log('App não está instalado');
+        setIsInstalled(false);
       }
     };
     
     checkInstallation();
-    window.addEventListener('appinstalled', () => setIsInstalled(true));
+    
+    const handleAppInstalled = () => {
+      console.log('App foi instalado!');
+      setIsInstalled(true);
+    };
+    
+    window.addEventListener('appinstalled', handleAppInstalled);
     
     return () => {
-      window.removeEventListener('appinstalled', () => setIsInstalled(true));
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
@@ -64,12 +75,19 @@ export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
   // Capturar prompt de instalação
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
+      console.log('Prompt de instalação capturado!');
       e.preventDefault();
       setDeferredPrompt(e);
       setShowInstallPrompt(true);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // Verificar se já temos um prompt pendente
+    if ('deferredPrompt' in window) {
+      console.log('Prompt de instalação já disponível');
+      setShowInstallPrompt(true);
+    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);

@@ -1,10 +1,10 @@
-const CACHE_NAME = 'inventario-cache-v1';
+const CACHE_NAME = 'inventario-cache-v2';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json'
+  '/manifest.json',
+  '/favicon.svg',
+  '/favicon.ico'
 ];
 
 // Instalar service worker
