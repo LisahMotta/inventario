@@ -9,7 +9,8 @@ const SyncStatus: React.FC = () => {
     syncData, 
     installApp, 
     showInstallPrompt, 
-    setShowInstallPrompt 
+    setShowInstallPrompt,
+    checkInstallation
   } = useSync();
 
   return (
@@ -94,13 +95,34 @@ const SyncStatus: React.FC = () => {
 
       {/* Botão para forçar instalação (apenas para debug) */}
       {!isInstalled && !showInstallPrompt && (
-        <button
-          onClick={() => setShowInstallPrompt(true)}
-          className="bg-orange-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-orange-600 transition flex items-center space-x-2"
-        >
-          <span className="text-sm">📱</span>
-          <span className="text-sm font-medium">Instalar App</span>
-        </button>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => {
+              checkInstallation();
+              setShowInstallPrompt(true);
+            }}
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-orange-600 transition flex items-center space-x-2"
+          >
+            <span className="text-sm">📱</span>
+            <span className="text-sm font-medium">Instalar App</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              console.log('Status do app:');
+              console.log('- isInstalled:', isInstalled);
+              console.log('- showInstallPrompt:', showInstallPrompt);
+              console.log('- display-mode standalone:', window.matchMedia('(display-mode: standalone)').matches);
+              console.log('- serviceWorker:', 'serviceWorker' in navigator);
+              console.log('- BeforeInstallPromptEvent:', 'BeforeInstallPromptEvent' in window);
+              // @ts-ignore
+              console.log('- window.deferredPrompt:', window.deferredPrompt);
+            }}
+            className="bg-gray-500 text-white px-3 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition text-xs"
+          >
+            🔍 Debug
+          </button>
+        </div>
       )}
     </div>
   );

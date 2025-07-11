@@ -8,6 +8,7 @@ interface SyncContextType {
   installApp: () => Promise<void>;
   showInstallPrompt: boolean;
   setShowInstallPrompt: (show: boolean) => void;
+  checkInstallation: () => void;
 }
 
 const SyncContext = createContext<SyncContextType | undefined>(undefined);
@@ -32,18 +33,18 @@ export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   // Verificar se o app está instalado
+  const checkInstallation = () => {
+    // Verificar se está em modo standalone (app instalado)
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('App já está instalado');
+      setIsInstalled(true);
+    } else {
+      console.log('App não está instalado');
+      setIsInstalled(false);
+    }
+  };
+
   useEffect(() => {
-    const checkInstallation = () => {
-      // Verificar se está em modo standalone (app instalado)
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('App já está instalado');
-        setIsInstalled(true);
-      } else {
-        console.log('App não está instalado');
-        setIsInstalled(false);
-      }
-    };
-    
     checkInstallation();
     
     const handleAppInstalled = () => {
@@ -75,19 +76,28 @@ export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
   // Capturar prompt de instalação
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
-      console.log('Prompt de instalação capturado!');
+      console.log('Prompt de instalação capturado!', e);
       e.preventDefault();
       setDeferredPrompt(e);
       setShowInstallPrompt(true);
     };
 
+    // Adicionar listener para o evento
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Verificar se já temos um prompt pendente
-    if ('deferredPrompt' in window) {
-      console.log('Prompt de instalação já disponível');
-      setShowInstallPrompt(true);
-    }
+    // Verificar se já temos um prompt pendente (para casos de refresh)
+    const checkExistingPrompt = () => {
+      // @ts-ignore
+      if (window.deferredPrompt) {
+        console.log('Prompt de instalação já disponível no window');
+        // @ts-ignore
+        setDeferredPrompt(window.deferredPrompt);
+        setShowInstallPrompt(true);
+      }
+    };
+
+    // Verificar após um pequeno delay
+    setTimeout(checkExistingPrompt, 1000);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -163,17 +173,50 @@ export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
 
   // Instalar app
   const installApp = async () => {
+    console.log('Tentando instalar app...');
+    console.log('deferredPrompt:', deferredPrompt);
+    
     if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      
-      if (outcome === 'accepted') {
-        console.log('App instalado com sucesso!');
-        setIsInstalled(true);
+      try {
+        console.log('Usando deferredPrompt para instalação');
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+          console.log('App instalado com sucesso!');
+          setIsInstalled(true);
+        } else {
+          console.log('Instalação cancelada pelo usuário');
+        }
+        
+        setDeferredPrompt(null);
+        setShowInstallPrompt(false);
+      } catch (error) {
+        console.error('Erro ao instalar app:', error);
       }
+    } else {
+      console.log('DeferredPrompt não disponível, tentando instalação manual...');
       
-      setDeferredPrompt(null);
-      setShowInstallPrompt(false);
+      // Tentar instalação manual
+      if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
+        try {
+          // Verificar se o app pode ser instalado
+          const isInstallable = window.matchMedia('(display-mode: standalone)').matches === false;
+          
+          if (isInstallable) {
+            console.log('App pode ser instalado, mostrando instruções...');
+            alert('Para instalar o app:\n\n1. Clique no ícone de instalação na barra de endereços\n2. Ou use o menu do navegador (⋮) → "Instalar app"\n3. Ou pressione Ctrl+Shift+I e vá em Application → Manifest → Install');
+          } else {
+            console.log('App já está instalado ou não pode ser instalado');
+            setIsInstalled(true);
+          }
+        } catch (error) {
+          console.error('Erro na verificação de instalação:', error);
+        }
+      } else {
+        console.log('Service Worker ou BeforeInstallPromptEvent não suportado');
+        alert('Seu navegador não suporta instalação de PWA. Tente usar Chrome, Edge ou Firefox.');
+      }
     }
   };
 
@@ -187,6 +230,7 @@ export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
         installApp,
         showInstallPrompt,
         setShowInstallPrompt,
+        checkInstallation,
       }}
     >
       {children}

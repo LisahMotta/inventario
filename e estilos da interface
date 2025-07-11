@@ -1,0 +1,86 @@
+warning: in the working copy of 'frontend-manual/src/App.tsx', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/frontend-manual/src/App.tsx b/frontend-manual/src/App.tsx[m
+[1mindex cecfec9..ad33e02 100644[m
+[1m--- a/frontend-manual/src/App.tsx[m
+[1m+++ b/frontend-manual/src/App.tsx[m
+[36m@@ -34,7 +34,20 @@[m [mconst App: React.FC = () => {[m
+       </div>[m
+     );[m
+   }[m
+[31m-[m
+[32m+[m[32m  const navLinkStyle: React.CSSProperties = {[m
+[32m+[m[32m    color: '#ffffff',[m
+[32m+[m[32m    textDecoration: 'none',[m
+[32m+[m[32m    fontWeight: 600,[m
+[32m+[m[32m    padding: '6px 12px',[m
+[32m+[m[32m    borderRadius: '6px',[m
+[32m+[m[32m    transition: 'background-color 0.3s',[m
+[32m+[m[32m    backgroundColor: 'rgba(255, 255, 255, 0.1)',[m
+[32m+[m[32m  };[m
+[32m+[m[41m  [m
+[32m+[m[32m  const navLinkHoverStyle = {[m
+[32m+[m[32m    backgroundColor: 'rgba(255, 255, 255, 0.25)',[m
+[32m+[m[32m  };[m
+[32m+[m[41m  [m
+   return ([m
+     <BrowserRouter>[m
+       <div style={{[m
+[36m@@ -48,16 +61,48 @@[m [mconst App: React.FC = () => {[m
+         alignItems: 'stretch',[m
+         justifyContent: 'flex-start'[m
+       }}>[m
+[31m-        <nav style={{ display: 'flex', gap: 16, margin: 16 }}>[m
+[31m-          <Link to="/dashboard" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Dashboard</Link>[m
+[31m-          <button onClick={logout}>Sair ({usuario.nome})</button>[m
+[31m-          <Link to="/equipamentos" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Equipamentos</Link>[m
+[31m-          {podeAgendar && <Link to="/agendamentos" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Agendamentos</Link>}[m
+[31m-          {podeEmprestar && <Link to="/emprestimos" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Empréstimos</Link>}[m
+[31m-          <Link to="/manutencoes" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Manutenções</Link>[m
+[31m-          {isAdmin && <Link to="/usuarios" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Usuários</Link>}[m
+[31m-          <Link to="/leitorqr" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Leitor QR</Link>[m
+[31m-        </nav>[m
+[32m+[m[32m        <nav style={{[m
+[32m+[m[32m  display: 'flex',[m
+[32m+[m[32m  gap: 12,[m
+[32m+[m[32m  padding: '12px 24px',[m
+[32m+[m[32m  margin: '16px',[m
+[32m+[m[32m  background: 'rgba(0, 0, 0, 0.4)',[m
+[32m+[m[32m  borderRadius: '12px',[m
+[32m+[m[32m  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',[m
+[32m+[m[32m  backdropFilter: 'blur(8px)',[m
+[32m+[m[32m  alignItems: 'center',[m
+[32m+[m[32m  justifyContent: 'space-between',[m
+[32m+[m[32m  flexWrap: 'wrap',[m
+[32m+[m[32m}}>[m
+[32m+[m
+[32m+[m[32m  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>[m
+[32m+[m[32m    <Link to="/dashboard" style={navLinkStyle}>Dashboard</Link>[m
+[32m+[m[32m    <Link to="/equipamentos" style={navLinkStyle}>Equipamentos</Link>[m
+[32m+[m[32m    {podeAgendar && <Link to="/agendamentos" style={navLinkStyle}>Agendamentos</Link>}[m
+[32m+[m[32m    {podeEmprestar && <Link to="/emprestimos" style={navLinkStyle}>Empréstimos</Link>}[m
+[32m+[m[32m    <Link to="/manutencoes" style={navLinkStyle}>Manutenções</Link>[m
+[32m+[m[32m    {isAdmin && <Link to="/usuarios" style={navLinkStyle}>Usuários</Link>}[m
+[32m+[m[32m    <Link to="/leitorqr" style={navLinkStyle}>Leitor QR</Link>[m
+[32m+[m[32m  </div>[m
+[32m+[m
+[32m+[m[32m  <button[m
+[32m+[m[32m    onClick={logout}[m
+[32m+[m[32m    style={{[m
+[32m+[m[32m      backgroundColor: '#ef4444',[m
+[32m+[m[32m      color: 'white',[m
+[32m+[m[32m      border: 'none',[m
+[32m+[m[32m      padding: '6px 12px',[m
+[32m+[m[32m      borderRadius: '8px',[m
+[32m+[m[32m      fontWeight: 600,[m
+[32m+[m[32m      cursor: 'pointer',[m
+[32m+[m[32m      transition: 'background 0.3s',[m
+[32m+[m[32m    }}[m
+[32m+[m[32m    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}[m
+[32m+[m[32m    onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#ef4444'}[m
+[32m+[m[32m  >[m
+[32m+[m[32m    Sair ({usuario.nome})[m
+[32m+[m[32m  </button>[m
+[32m+[m[32m</nav>[m
+         <Routes>[m
+           <Route path="/dashboard" element={<Dashboard />} />[m
+           <Route path="/equipamentos" element={<Equipamentos />} />[m
