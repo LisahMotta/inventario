@@ -15,11 +15,37 @@ const manutencoes_1 = __importDefault(require("./routes/manutencoes"));
 const emprestimos_1 = __importDefault(require("./routes/emprestimos"));
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 console.log("NODE_ENV:", process.env.NODE_ENV);
+// Testar conexão com banco de dados
+const db_1 = require("./db");
+const schema_1 = require("./schema");
+const testDatabaseConnection = async () => {
+    try {
+        console.log("Testando conexão com banco de dados...");
+        const result = await db_1.db.select().from(schema_1.usuarios).limit(1);
+        console.log("Conexão com banco OK! Usuários encontrados:", result.length);
+    }
+    catch (error) {
+        console.error("Erro na conexão com banco:", error);
+        console.error("Verifique se as tabelas foram criadas e se DATABASE_URL está correto");
+    }
+};
+testDatabaseConnection();
 const app = (0, express_1.default)();
 // Configurações do Express
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+// Health check endpoint
+app.get("/health", async (req, res) => {
+    try {
+        await db_1.db.select().from(schema_1.usuarios).limit(1);
+        res.json({ status: "OK", message: "Database connection successful" });
+    }
+    catch (error) {
+        console.error("Health check failed:", error);
+        res.status(500).json({ status: "ERROR", message: "Database connection failed", error: String(error) });
+    }
+});
 // Rotas da API
 app.use("/equipamentos", equipamentos_1.default);
 app.use("/agendamentos", agendamentos_1.default);
