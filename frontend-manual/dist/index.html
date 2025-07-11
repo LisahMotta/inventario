@@ -4,11 +4,55 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2c5364" />
+    <meta name="description" content="Sistema de Inventário de Informática com funcionalidade offline" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Inventário" />
+    <link rel="manifest" href="/manifest.json" />
     <title>Inventário de Equipamentos</title>
-    <script type="module" crossorigin src="/assets/index-DQMbX7-2.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BxvyVLfr.css">
+    <script type="module" crossorigin src="/assets/index-CSCx7lKu.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BkC1ceCY.css">
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- Script de teste para PWA -->
+    <script>
+      // Verificar status do PWA
+      window.addEventListener('load', () => {
+        try {
+          console.log('=== TESTE PWA ===');
+          console.log('Service Worker:', 'serviceWorker' in navigator);
+          console.log('BeforeInstallPromptEvent:', 'BeforeInstallPromptEvent' in window);
+          console.log('Display mode standalone:', window.matchMedia('(display-mode: standalone)').matches);
+          console.log('Manifest:', document.querySelector('link[rel="manifest"]')?.href);
+          
+          // Verificar se o service worker está registrado
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+              console.log('Service Workers registrados:', registrations.length);
+              registrations.forEach(reg => {
+                console.log('SW:', reg.scope, reg.active ? 'Ativo' : 'Inativo');
+              });
+            }).catch(error => {
+              console.error('Erro ao verificar service workers:', error);
+            });
+          }
+          
+          // Verificar manifest
+          fetch('/manifest.json')
+            .then(response => response.json())
+            .then(manifest => {
+              console.log('Manifest carregado:', manifest);
+            })
+            .catch(error => {
+              console.error('Erro ao carregar manifest:', error);
+            });
+        } catch (error) {
+          console.error('Erro no script de teste PWA:', error);
+        }
+      });
+    </script>
   </body>
 </html> 
