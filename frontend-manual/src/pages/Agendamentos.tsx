@@ -77,11 +77,11 @@ function getDaysInMonth(year: number, month: number) {
 }
 
 // Adicionar função para obter dias úteis (segunda a sexta) da semana atual
-function getWeekdaysOfWeek(offset = 0) {
+function getWeekdaysOfWeek(offset = 0): Date[] {
   const today = new Date();
   const monday = new Date(today);
   monday.setDate(today.getDate() - today.getDay() + 1 + offset * 7);
-  const days = [];
+  const days: Date[] = [];
   for (let i = 0; i < 5; i++) {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
@@ -223,39 +223,45 @@ const Agendamentos: React.FC = () => {
         });
       }
       if (resp.ok) {
-        setSucesso(editId ? "Agendamento atualizado!" : "Agendamento cadastrado!");
-        setForm({ ...form, data: "" });
+        setSucesso(editId ? "Agendamento atualizado!" : "Agendamento criado!");
+        setForm({
+          equipamento_id: 1,
+          data: "",
+          turno: "Manhã",
+          turma: turmas[0],
+          aula: "1ª Aula",
+          status: "agendado",
+          observacoes: "",
+        });
         setEditId(null);
         fetchAgendamentos();
       } else {
-        const data = await resp.json();
-        setErro(data.erro || "Erro ao salvar agendamento");
+        const errorData = await resp.json();
+        setErro(errorData.erro || "Erro ao salvar agendamento");
       }
-    } catch (err) {
-      setErro("Erro ao conectar com o servidor");
+    } catch (error) {
+      setErro("Erro ao salvar agendamento");
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = (ag: Agendamento) => {
-    const d = new Date(ag.data_inicio);
+    setEditId(ag.id);
+    const data = new Date(ag.data_inicio);
     setForm({
       equipamento_id: ag.equipamento_id,
-      data: String(d.getDate()).padStart(2, "0"),
+      data: String(data.getDate()).padStart(2, "0"),
       turno: ag.turno || "Manhã",
       turma: ag.turma || turmas[0],
       aula: ag.aula || "1ª Aula",
       status: ag.status,
       observacoes: ag.observacoes || "",
     });
-    setEditId(ag.id);
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Deseja realmente excluir este agendamento?")) return;
-    setLoading(true);
-    setErro("");
+    if (!confirm("Tem certeza que deseja excluir este agendamento?")) return;
     setSucesso("");
     try {
       const resp = await fetch(`${API_URL}/agendamentos/${id}`, { method: "DELETE" });
@@ -265,116 +271,118 @@ const Agendamentos: React.FC = () => {
       } else {
         setErro("Erro ao excluir agendamento");
       }
-    } catch {
-      setErro("Erro ao conectar com o servidor");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      setErro("Erro ao excluir agendamento");
     }
   };
 
-  // Filtrar agendamentos do mês/ano atual e por equipamento
-  const agendamentosMes = agendamentos.filter(a => {
-    const d = new Date(a.data_inicio);
-    const filtroEquip = filtroEquipamento.trim() ? a.equipamento_id === Number(filtroEquipamento) : true;
-    return d.getFullYear() === ano && d.getMonth() === mes && filtroEquip;
-  });
-
-  // Função para exportar CSV
   const exportarCSV = () => {
-    const header = [
-      "ID", "Equipamento", "Início", "Fim", "Turma", "Turno", "Aula", "Status", "Observações"
-    ];
-    const rows = agendamentos.map(a => [
-      a.id,
-      a.equipamento_id,
-      a.data_inicio,
-      a.data_fim,
-      a.turma,
-      a.turno,
-      a.aula,
-      a.status,
-      a.observacoes
-    ]);
-    const csv = [header, ...rows].map(r => r.map(v => `"${v ?? ''}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
+    const headers = ["ID", "Equipamento", "Data", "Turma", "Turno", "Aula", "Status", "Observações"];
+    const csvContent = [
+      headers.join(","),
+      ...agendamentos.map(ag => [
+        ag.id,
+        ag.equipamento_id,
+        new Date(ag.data_inicio).toLocaleDateString('pt-BR'),
+        ag.turma || "",
+        ag.turno || "",
+        ag.aula || "",
+        ag.status,
+        ag.observacoes || ""
+      ].join(","))
+    ].join("\n");
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `agendamentos.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "agendamentos.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  // Função para exportar PDF
   const exportarPDF = () => {
     const doc = new jsPDF();
-    doc.text("Relatório de Agendamentos", 14, 14);
+    const headers = [["ID", "Equipamento", "Data", "Turma", "Turno", "Aula", "Status"]];
+    const data = agendamentos.map(ag => [
+      ag.id,
+      ag.equipamento_id,
+      new Date(ag.data_inicio).toLocaleDateString('pt-BR'),
+      ag.turma || "",
+      ag.turno || "",
+      ag.aula || "",
+      ag.status
+    ]);
+    
     (doc as any).autoTable({
-      head: [["ID", "Equipamento", "Início", "Fim", "Turma", "Turno", "Aula", "Status", "Observações"]],
-      body: agendamentosFiltrados.map(a => [
-        a.id,
-        a.equipamento_id,
-        a.data_inicio,
-        a.data_fim,
-        a.turma,
-        a.turno,
-        a.aula,
-        a.status,
-        a.observacoes
-      ]),
-      startY: 20
+      head: headers,
+      body: data,
+      startY: 20,
+      theme: 'grid'
     });
+    
     doc.save("agendamentos.pdf");
   };
 
-  // Aplicar filtros
-  const agendamentosFiltrados = agendamentos.filter(a => {
-    const d = new Date(a.data_inicio);
-    const buscaOk = !busca || [a.turma, a.turno, a.aula, a.status, a.observacoes, a.equipamento_id].some(v => v && String(v).toLowerCase().includes(busca.toLowerCase()));
-    const dataOk = (!filtroDataInicio || d >= new Date(filtroDataInicio)) && (!filtroDataFim || d <= new Date(filtroDataFim));
-    const statusOk = !filtroStatus || a.status === filtroStatus;
-    const turmaOk = !filtroTurma || a.turma === filtroTurma;
-    // Mostrar apenas agendamentos do turno selecionado no formulário
-    const turnoOk = !form.turno || a.turno === form.turno;
-    const filtroEquip = filtroEquipamento.trim() ? a.equipamento_id === Number(filtroEquipamento) : true;
-    return buscaOk && dataOk && statusOk && turmaOk && turnoOk && filtroEquip;
+  const agendamentosFiltrados = agendamentos.filter(ag => {
+    const matchBusca = !busca || 
+      (ag.turma && ag.turma.toLowerCase().includes(busca.toLowerCase())) ||
+      (ag.turno && ag.turno.toLowerCase().includes(busca.toLowerCase())) ||
+      (ag.aula && ag.aula.toLowerCase().includes(busca.toLowerCase()));
+    
+    const matchEquipamento = !filtroEquipamento || ag.equipamento_id.toString().includes(filtroEquipamento);
+    const matchStatus = !filtroStatus || ag.status === filtroStatus;
+    const matchTurma = !filtroTurma || ag.turma === filtroTurma;
+    const matchTurno = !filtroTurno || ag.turno === filtroTurno;
+    
+    let matchData = true;
+    if (filtroDataInicio || filtroDataFim) {
+      const dataAgendamento = new Date(ag.data_inicio);
+      if (filtroDataInicio) {
+        const dataInicio = new Date(filtroDataInicio);
+        matchData = matchData && dataAgendamento >= dataInicio;
+      }
+      if (filtroDataFim) {
+        const dataFim = new Date(filtroDataFim);
+        dataFim.setHours(23, 59, 59);
+        matchData = matchData && dataAgendamento <= dataFim;
+      }
+    }
+    
+    return matchBusca && matchEquipamento && matchStatus && matchTurma && matchTurno && matchData;
   });
 
   return (
-    <div style={{ maxWidth: 900, margin: "40px auto" }}>
-      <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Agendamentos</h1>
-      <div style={{ marginBottom: 8 }}>
-        <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar (turma, turno, aula, status, observações, equipamento)" style={{ width: 300, marginRight: 8 }} />
+    <div className="max-w-6xl mx-auto mt-10">
+      <h1 className="text-3xl font-extrabold text-white text-center mb-8 drop-shadow">
+        Agendamentos
+      </h1>
+
+      <div className="mb-4">
+        <input
+          value={busca}
+          onChange={e => setBusca(e.target.value)}
+          placeholder="Buscar (turma, turno, aula...)"
+          className="w-full md:w-96 p-2 border border-gray-300 rounded shadow-sm"
+        />
       </div>
-      <button onClick={exportarCSV} style={{ marginBottom: 8, marginRight: 8 }}>Exportar CSV</button>
-      <button onClick={exportarPDF} style={{ marginBottom: 8 }}>Exportar PDF</button>
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ color: '#fff', fontWeight: 600, textShadow: '0 1px 4px #000a' }}>Filtrar por equipamento: </label>
-        <input type="number" value={filtroEquipamento} onChange={e => setFiltroEquipamento(e.target.value)} placeholder="ID do Equipamento" style={{ width: 120, marginRight: 16 }} />
-        <label>Data início: </label>
-        <input type="date" value={filtroDataInicio} onChange={e => setFiltroDataInicio(e.target.value)} style={{ marginRight: 8 }} />
-        <label>Data fim: </label>
-        <input type="date" value={filtroDataFim} onChange={e => setFiltroDataFim(e.target.value)} style={{ marginRight: 8 }} />
-        <label>Status: </label>
-        <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)} style={{ marginRight: 8 }}>
-          <option value="">Todos</option>
-          <option value="agendado">Agendado</option>
-          <option value="concluido">Concluído</option>
-          <option value="cancelado">Cancelado</option>
-        </select>
-        <label>Turma: </label>
-        <select value={filtroTurma} onChange={e => setFiltroTurma(e.target.value)} style={{ marginRight: 8 }}>
-          <option value="">Todas</option>
-          {turmas.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
-        <label>Turno: </label>
-        <select value={filtroTurno} onChange={e => setFiltroTurno(e.target.value)} style={{ marginRight: 8 }}>
-          <option value="">Todos</option>
-          {turnos.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button onClick={exportarCSV} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+          Exportar CSV
+        </button>
+        <button onClick={exportarPDF} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+          Exportar PDF
+        </button>
       </div>
-      <form onSubmit={handleSubmit} style={{ marginBottom: 24, border: "1px solid #ccc", padding: 16, borderRadius: 8 }}>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md p-6 rounded-lg space-y-4 mb-8"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <input
             name="equipamento_id"
             type="number"
@@ -382,139 +390,190 @@ const Agendamentos: React.FC = () => {
             value={form.equipamento_id}
             onChange={handleChange}
             required
-            style={{ flex: 1 }}
+            className="border border-gray-300 rounded p-2"
           />
-          <select name="turma" value={form.turma} onChange={handleChange} style={{ flex: 1 }}>
+          <select name="turma" value={form.turma} onChange={handleChange} className="border border-gray-300 rounded p-2">
             {turmas.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
-          <select name="turno" value={form.turno} onChange={handleChange} style={{ flex: 1 }}>
+          <select name="turno" value={form.turno} onChange={handleChange} className="border border-gray-300 rounded p-2">
             {turnos.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
-          <select name="aula" value={form.aula} onChange={handleChange} style={{ flex: 1 }}>
+          <select name="aula" value={form.aula} onChange={handleChange} className="border border-gray-300 rounded p-2">
             {getAulasTurno().filter(a => !a.intervalo).map(a => (
-              <option key={a.label} value={a.label}>{a.label} ({a.inicio} - {a.fim})</option>
+              <option key={a.label} value={a.label}>{a.label}</option>
             ))}
           </select>
-          <select name="data" value={form.data} onChange={handleChange} style={{ flex: 1 }} required>
+          <select name="data" value={form.data} onChange={handleChange} className="border border-gray-300 rounded p-2">
             <option value="">Dia</option>
             {diasSemana.map(d => (
-              <option key={d.getDate()} value={String(d.getDate()).padStart(2, "0")}>{d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}</option>
+              <option key={d.getDate()} value={String(d.getDate()).padStart(2, "0")}>
+                {d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}
+              </option>
             ))}
           </select>
         </div>
-        <textarea name="observacoes" placeholder="Observações" value={form.observacoes} onChange={handleChange} style={{ width: "100%", marginTop: 8 }} />
-        <button type="submit" disabled={loading} style={{ marginTop: 8, background: '#2c5364', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 20px', fontWeight: 600, boxShadow: '0 2px 8px #0002', cursor: 'pointer', transition: 'background 0.2s' }}
-          onMouseOver={e => e.currentTarget.style.background = '#395b7a'}
-          onMouseOut={e => e.currentTarget.style.background = '#2c5364'}>
+        <textarea
+          name="observacoes"
+          placeholder="Observações"
+          value={form.observacoes}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-sky-700 text-white px-6 py-2 rounded font-semibold hover:bg-sky-800 transition"
+        >
           {loading ? (editId ? "Salvando..." : "Agendando...") : (editId ? "Salvar edição" : "Agendar")}
         </button>
         {editId && (
-          <button type="button" onClick={() => { setEditId(null); setForm({ ...form, data: "" }); }} style={{ marginLeft: 8 }}>
+          <button
+            type="button"
+            onClick={() => { setEditId(null); setForm({ ...form, data: "" }); }}
+            className="ml-4 text-sm text-red-600 hover:underline"
+          >
             Cancelar edição
           </button>
         )}
-        {erro && <div style={{ color: "#fff", background: "#ff4d4f", padding: 8, borderRadius: 6, marginTop: 10, textAlign: 'center', fontWeight: 600, textShadow: '0 1px 4px #000a' }}>{erro}</div>}
-        {sucesso && <div style={{ color: "#fff", background: "#52c41a", padding: 8, borderRadius: 6, marginTop: 10, textAlign: 'center', fontWeight: 600, textShadow: '0 1px 4px #000a' }}>{sucesso}</div>}
+        {erro && <div className="bg-red-500 text-white p-2 rounded mt-2 text-center font-semibold">{erro}</div>}
+        {sucesso && <div className="bg-green-500 text-white p-2 rounded mt-2 text-center font-semibold">{sucesso}</div>}
       </form>
-      <div style={{ marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
+
+      {/* Filtros avançados */}
+      <div className="bg-white shadow-md p-4 rounded-lg mb-6">
+        <h3 className="text-lg font-semibold mb-3">Filtros Avançados</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <input
+            type="text"
+            placeholder="Filtrar por equipamento"
+            value={filtroEquipamento}
+            onChange={e => setFiltroEquipamento(e.target.value)}
+            className="border border-gray-300 rounded p-2"
+          />
+          <input
+            type="date"
+            placeholder="Data início"
+            value={filtroDataInicio}
+            onChange={e => setFiltroDataInicio(e.target.value)}
+            className="border border-gray-300 rounded p-2"
+          />
+          <input
+            type="date"
+            placeholder="Data fim"
+            value={filtroDataFim}
+            onChange={e => setFiltroDataFim(e.target.value)}
+            className="border border-gray-300 rounded p-2"
+          />
+          <select
+            value={filtroStatus}
+            onChange={e => setFiltroStatus(e.target.value)}
+            className="border border-gray-300 rounded p-2"
+          >
+            <option value="">Todos os status</option>
+            <option value="agendado">Agendado</option>
+            <option value="cancelado">Cancelado</option>
+            <option value="concluido">Concluído</option>
+          </select>
+          <select
+            value={filtroTurma}
+            onChange={e => setFiltroTurma(e.target.value)}
+            className="border border-gray-300 rounded p-2"
+          >
+            <option value="">Todas as turmas</option>
+            {turmas.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <select
+            value={filtroTurno}
+            onChange={e => setFiltroTurno(e.target.value)}
+            className="border border-gray-300 rounded p-2"
+          >
+            <option value="">Todos os turnos</option>
+            {turnos.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+      </div>
+
+      {/* Controles de semana */}
+      <div className="flex justify-between items-center mb-4">
         <button
-          onClick={() => setSemanaOffset(s => s - 1)}
-          style={{
-            background: "#f0f4ff",
-            border: "none",
-            borderRadius: 20,
-            padding: "8px 18px",
-            fontSize: 18,
-            boxShadow: "0 2px 8px #0001",
-            cursor: "pointer",
-            transition: "background 0.2s",
-            color: "#2c5364"
-          }}
-          onMouseOver={e => e.currentTarget.style.background = "#dbeafe"}
-          onMouseOut={e => e.currentTarget.style.background = "#f0f4ff"}
-          title="Semana anterior"
+          onClick={() => setSemanaOffset(semanaOffset - 1)}
+          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
         >
-          &#8592; Semana anterior
+          Semana Anterior
         </button>
-        <span style={{
-          margin: "0 16px",
-          fontWeight: 700,
-          fontSize: 22,
-          color: "#fff",
-          letterSpacing: 1,
-          textShadow: '0 2px 8px #0008'
-        }}>
-          {diasSemana[0].toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} - {diasSemana[4].toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+        <span className="text-white font-semibold">
+          Semana de {diasSemana[0].toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} a {diasSemana[4].toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
         </span>
         <button
-          onClick={() => setSemanaOffset(s => s + 1)}
-          style={{
-            background: "#f0f4ff",
-            border: "none",
-            borderRadius: 20,
-            padding: "8px 18px",
-            fontSize: 18,
-            boxShadow: "0 2px 8px #0001",
-            cursor: "pointer",
-            transition: "background 0.2s",
-            color: "#2c5364"
-          }}
-          onMouseOver={e => e.currentTarget.style.background = "#dbeafe"}
-          onMouseOut={e => e.currentTarget.style.background = "#f0f4ff"}
-          title="Próxima semana"
+          onClick={() => setSemanaOffset(semanaOffset + 1)}
+          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
         >
-          Próxima semana &#8594;
+          Próxima Semana
         </button>
       </div>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr style={{ background: 'rgba(44,83,100,0.7)' }}>
-            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>ID</th>
-            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Equipamento</th>
-            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Usuário</th>
-            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Data Empréstimo</th>
-            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Data Devolução</th>
-            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Status</th>
-            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Observações</th>
-            <th style={{ color: '#fff', fontWeight: 700, textShadow: '0 1px 4px #000a' }}>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: diasSemana.length }, (_, i) => {
-            const dia = diasSemana[i].getDate();
-            return (
-              <tr key={dia}>
-                <td>{diasSemana[i].toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}</td>
-                {turnos.map(turno => {
-                  const aulas = horariosAulas[turno].filter(a => !a.intervalo);
-                  return (
-                    <td key={turno} style={{ minWidth: 180, border: "1px solid #eee", verticalAlign: "top" }}>
-                      {aulas.map(aula => {
-                        const ags = agendamentosFiltrados.filter(ag => {
-                          const d = new Date(ag.data_inicio);
-                          return d.getDate() === dia && ag.turno === turno && ag.aula === aula.label;
-                        });
-                        return (
-                          <div key={aula.label} style={{ marginBottom: 4 }}>
-                            <b>{aula.label} ({aula.inicio}-{aula.fim})</b><br />
-                            {ags.length === 0 ? <span style={{ color: '#aaa' }}>Livre</span> : ags.map(ag => (
-                              <div key={ag.id} style={{ background: '#f5f5f5', margin: 2, padding: 2, borderRadius: 4 }}>
-                                <b>{ag.turma}</b><br />Equip: {ag.equipamento_id}<br />{ag.observacoes}<br />
-                                <button onClick={() => handleEdit(ag)} style={{ marginRight: 4 }}>Editar</button>
-                                <button onClick={() => handleDelete(ag.id)} style={{ color: 'red' }}>Excluir</button>
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      })}
-                    </td>
-                  );
-                })}
+
+      {/* Tabela de agendamentos */}
+      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipamento</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turma</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turno</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aula</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {agendamentosFiltrados.map(agendamento => (
+                <tr key={agendamento.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{agendamento.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{agendamento.equipamento_id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {new Date(agendamento.data_inicio).toLocaleDateString('pt-BR')}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{agendamento.turma || "-"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{agendamento.turno || "-"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{agendamento.aula || "-"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      agendamento.status === 'agendado' ? 'bg-green-100 text-green-800' :
+                      agendamento.status === 'cancelado' ? 'bg-red-100 text-red-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {agendamento.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <button
+                      onClick={() => handleEdit(agendamento)}
+                      className="text-indigo-600 hover:text-indigo-900"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(agendamento.id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Excluir
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {agendamentosFiltrados.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-500 text-lg">Nenhum agendamento encontrado</p>
+        </div>
+      )}
     </div>
   );
 };
