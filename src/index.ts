@@ -34,7 +34,7 @@ const testDatabaseConnection = async () => {
   }
 };
 
-const createTables = async () => {
+export const createTables = async () => {
   try {
     console.log("Criando tabelas manualmente...");
     const { Pool } = await import("pg");

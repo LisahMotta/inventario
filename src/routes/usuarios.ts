@@ -35,7 +35,18 @@ router.post("/", async (req, res) => {
       .returning();
     res.status(201).json({ id: novoUsuario[0].id, nome, email: novoUsuario[0].email, tipo });
   } catch (error) {
-    console.error("Erro detalhado ao cadastrar usuário:", error); // Log detalhado
+    console.error("Erro detalhado ao cadastrar usuário:", error);
+    
+    // Se o erro for de tabela não existir, informar para acessar /init-db
+    const errorMessage = String(error);
+    if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
+      res.status(500).json({ 
+        erro: "Tabelas não existem. Acesse /init-db para criar as tabelas primeiro.",
+        solucao: "Acesse: https://inventario-5cah.onrender.com/init-db"
+      });
+      return;
+    }
+    
     res.status(500).json({ erro: "Erro ao cadastrar usuário" });
   }
 });

@@ -36,6 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createTables = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const express_1 = __importDefault(require("express"));
@@ -62,7 +63,7 @@ const testDatabaseConnection = async () => {
         const errorMessage = String(error);
         if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
             console.log("Tabelas não existem. Criando tabelas...");
-            await createTables();
+            await (0, exports.createTables)();
         }
         else {
             console.error("Verifique se DATABASE_URL está correto");
@@ -146,6 +147,7 @@ const createTables = async () => {
         throw error;
     }
 };
+exports.createTables = createTables;
 testDatabaseConnection();
 const app = (0, express_1.default)();
 // Configurações do Express
@@ -167,7 +169,7 @@ app.get("/health", async (req, res) => {
 app.get("/init-db", async (req, res) => {
     try {
         console.log("Inicializando banco de dados...");
-        await createTables();
+        await (0, exports.createTables)();
         res.json({ status: "OK", message: "Database initialized successfully" });
     }
     catch (error) {
