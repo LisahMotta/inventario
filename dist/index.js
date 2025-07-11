@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -26,7 +59,83 @@ const testDatabaseConnection = async () => {
     }
     catch (error) {
         console.error("Erro na conexão com banco:", error);
-        console.error("Verifique se as tabelas foram criadas e se DATABASE_URL está correto");
+        const errorMessage = String(error);
+        if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
+            console.log("Tabelas não existem. Criando tabelas...");
+            await createTables();
+        }
+        else {
+            console.error("Verifique se DATABASE_URL está correto");
+        }
+    }
+};
+const createTables = async () => {
+    try {
+        console.log("Criando tabelas...");
+        // Importar todas as tabelas do schema
+        const { equipamentos, agendamentos, manutencoes, usuarios, emprestimos } = await Promise.resolve().then(() => __importStar(require("./schema")));
+        // Criar tabelas usando Drizzle
+        await db_1.db.execute(`
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id SERIAL PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        email VARCHAR(255),
+        senha VARCHAR(255) NOT NULL,
+        tipo VARCHAR(50) NOT NULL,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
+        await db_1.db.execute(`
+      CREATE TABLE IF NOT EXISTS equipamentos (
+        id SERIAL PRIMARY KEY,
+        tipo VARCHAR(100) NOT NULL,
+        marca VARCHAR(100) NOT NULL,
+        modelo VARCHAR(100) NOT NULL,
+        tombo VARCHAR(100) NOT NULL UNIQUE,
+        status VARCHAR(50) NOT NULL,
+        observacoes TEXT,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
+        await db_1.db.execute(`
+      CREATE TABLE IF NOT EXISTS agendamentos (
+        id SERIAL PRIMARY KEY,
+        equipamento_id INTEGER NOT NULL,
+        data_inicio TIMESTAMP NOT NULL,
+        data_fim TIMESTAMP NOT NULL,
+        status VARCHAR(50) NOT NULL,
+        observacoes TEXT,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
+        await db_1.db.execute(`
+      CREATE TABLE IF NOT EXISTS manutencoes (
+        id SERIAL PRIMARY KEY,
+        equipamento_id INTEGER NOT NULL,
+        data_manutencao TIMESTAMP NOT NULL,
+        descricao TEXT NOT NULL,
+        responsavel VARCHAR(100),
+        status VARCHAR(50) NOT NULL,
+        observacoes TEXT,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
+        await db_1.db.execute(`
+      CREATE TABLE IF NOT EXISTS emprestimos (
+        id SERIAL PRIMARY KEY,
+        equipamento_id INTEGER NOT NULL,
+        usuario_id INTEGER NOT NULL,
+        data_emprestimo TIMESTAMP NOT NULL,
+        data_devolucao TIMESTAMP,
+        status VARCHAR(50) NOT NULL,
+        observacoes TEXT,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
+        console.log("Tabelas criadas com sucesso!");
+    }
+    catch (error) {
+        console.error("Erro ao criar tabelas:", error);
     }
 };
 testDatabaseConnection();
