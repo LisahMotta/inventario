@@ -34,7 +34,20 @@ const App: React.FC = () => {
       </div>
     );
   }
-
+  const navLinkStyle: React.CSSProperties = {
+    color: '#ffffff',
+    textDecoration: 'none',
+    fontWeight: 600,
+    padding: '6px 12px',
+    borderRadius: '6px',
+    transition: 'background-color 0.3s',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  };
+  
+  const navLinkHoverStyle = {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+  };
+  
   return (
     <BrowserRouter>
       <div style={{
@@ -48,16 +61,48 @@ const App: React.FC = () => {
         alignItems: 'stretch',
         justifyContent: 'flex-start'
       }}>
-        <nav style={{ display: 'flex', gap: 16, margin: 16 }}>
-          <Link to="/dashboard" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Dashboard</Link>
-          <button onClick={logout}>Sair ({usuario.nome})</button>
-          <Link to="/equipamentos" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Equipamentos</Link>
-          {podeAgendar && <Link to="/agendamentos" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Agendamentos</Link>}
-          {podeEmprestar && <Link to="/emprestimos" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Empréstimos</Link>}
-          <Link to="/manutencoes" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Manutenções</Link>
-          {isAdmin && <Link to="/usuarios" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Usuários</Link>}
-          <Link to="/leitorqr" style={{ color: '#fff', textDecoration: 'none', fontWeight: 600 }}>Leitor QR</Link>
-        </nav>
+        <nav style={{
+  display: 'flex',
+  gap: 12,
+  padding: '12px 24px',
+  margin: '16px',
+  background: 'rgba(0, 0, 0, 0.4)',
+  borderRadius: '12px',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+  backdropFilter: 'blur(8px)',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+}}>
+
+  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+    <Link to="/dashboard" style={navLinkStyle}>Dashboard</Link>
+    <Link to="/equipamentos" style={navLinkStyle}>Equipamentos</Link>
+    {podeAgendar && <Link to="/agendamentos" style={navLinkStyle}>Agendamentos</Link>}
+    {podeEmprestar && <Link to="/emprestimos" style={navLinkStyle}>Empréstimos</Link>}
+    <Link to="/manutencoes" style={navLinkStyle}>Manutenções</Link>
+    {isAdmin && <Link to="/usuarios" style={navLinkStyle}>Usuários</Link>}
+    <Link to="/leitorqr" style={navLinkStyle}>Leitor QR</Link>
+  </div>
+
+  <button
+    onClick={logout}
+    style={{
+      backgroundColor: '#ef4444',
+      color: 'white',
+      border: 'none',
+      padding: '6px 12px',
+      borderRadius: '8px',
+      fontWeight: 600,
+      cursor: 'pointer',
+      transition: 'background 0.3s',
+    }}
+    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
+    onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#ef4444'}
+  >
+    Sair ({usuario.nome})
+  </button>
+</nav>
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/equipamentos" element={<Equipamentos />} />
