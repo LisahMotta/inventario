@@ -20,31 +20,37 @@
     <script>
       // Verificar status do PWA
       window.addEventListener('load', () => {
-        console.log('=== TESTE PWA ===');
-        console.log('Service Worker:', 'serviceWorker' in navigator);
-        console.log('BeforeInstallPromptEvent:', 'BeforeInstallPromptEvent' in window);
-        console.log('Display mode standalone:', window.matchMedia('(display-mode: standalone)').matches);
-        console.log('Manifest:', document.querySelector('link[rel="manifest"]')?.href);
-        
-        // Verificar se o service worker está registrado
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(registrations => {
-            console.log('Service Workers registrados:', registrations.length);
-            registrations.forEach(reg => {
-              console.log('SW:', reg.scope, reg.active ? 'Ativo' : 'Inativo');
+        try {
+          console.log('=== TESTE PWA ===');
+          console.log('Service Worker:', 'serviceWorker' in navigator);
+          console.log('BeforeInstallPromptEvent:', 'BeforeInstallPromptEvent' in window);
+          console.log('Display mode standalone:', window.matchMedia('(display-mode: standalone)').matches);
+          console.log('Manifest:', document.querySelector('link[rel="manifest"]')?.href);
+          
+          // Verificar se o service worker está registrado
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+              console.log('Service Workers registrados:', registrations.length);
+              registrations.forEach(reg => {
+                console.log('SW:', reg.scope, reg.active ? 'Ativo' : 'Inativo');
+              });
+            }).catch(error => {
+              console.error('Erro ao verificar service workers:', error);
             });
-          });
+          }
+          
+          // Verificar manifest
+          fetch('/manifest.json')
+            .then(response => response.json())
+            .then(manifest => {
+              console.log('Manifest carregado:', manifest);
+            })
+            .catch(error => {
+              console.error('Erro ao carregar manifest:', error);
+            });
+        } catch (error) {
+          console.error('Erro no script de teste PWA:', error);
         }
-        
-        // Verificar manifest
-        fetch('/manifest.json')
-          .then(response => response.json())
-          .then(manifest => {
-            console.log('Manifest carregado:', manifest);
-          })
-          .catch(error => {
-            console.error('Erro ao carregar manifest:', error);
-          });
       });
     </script>
   </body>
