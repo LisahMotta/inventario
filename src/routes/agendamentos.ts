@@ -11,6 +11,7 @@ router.get("/", async (req, res) => {
     const lista = await db.select().from(agendamentos);
     res.json(lista);
   } catch (error) {
+    console.error("Erro ao buscar agendamentos:", error);
     res.status(500).json({ erro: "Erro ao buscar agendamentos" });
   }
 });
@@ -30,6 +31,7 @@ router.get("/:id", async (req, res) => {
 
     res.json(resultado[0]);
   } catch (error) {
+    console.error("Erro ao buscar agendamento por ID:", error);
     res.status(500).json({ erro: "Erro ao buscar agendamento" });
   }
 });
@@ -44,6 +46,7 @@ router.post("/", async (req, res) => {
 
     res.status(201).json(novoAgendamento[0]);
   } catch (error) {
+    console.error("Erro ao cadastrar agendamento:", error);
     res.status(500).json({ erro: "Erro ao cadastrar agendamento" });
   }
 });
@@ -60,6 +63,7 @@ router.put("/:id", async (req, res) => {
 
     res.json(atualizado[0]);
   } catch (error) {
+    console.error("Erro ao atualizar agendamento:", error);
     res.status(500).json({ erro: "Erro ao atualizar agendamento" });
   }
 });
@@ -71,6 +75,7 @@ router.delete("/:id", async (req, res) => {
     await db.delete(agendamentos).where(eq(agendamentos.id, id));
     res.status(204).send();
   } catch (error) {
+    console.error("Erro ao deletar agendamento:", error);
     res.status(500).json({ erro: "Erro ao deletar agendamento" });
   }
 });
