@@ -89,6 +89,9 @@ const Equipamentos: React.FC = () => {
   return (
     <div style={{ maxWidth: 900, margin: "40px auto" }}>
       <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Equipamentos</h1>
+      <button onClick={fetchEquipamentos} style={{ marginBottom: 16, backgroundColor: '#007bff', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+        Mostrar Equipamentos
+      </button>
       <div style={{ marginBottom: 16 }}>
         <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar (tipo, marca, modelo, tombo, status, observações)" style={{ width: 300, marginRight: 8 }} />
         <label style={{ color: '#fff', fontWeight: 'bold' }}>Status: </label>
@@ -136,9 +139,9 @@ const Equipamentos: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {equipamentosFiltrados.map(eq => (
+          {equipamentosFiltrados.map((eq, index) => (
             <tr key={eq.id}>
-              <td style={{ color: '#fff' }}>{eq.id}</td>
+              <td style={{ color: '#fff' }}>{index + 1}</td>
               <td style={{ color: '#fff' }}>{eq.tipo}</td>
               <td style={{ color: '#fff' }}>{eq.marca}</td>
               <td style={{ color: '#fff' }}>{eq.modelo}</td>
