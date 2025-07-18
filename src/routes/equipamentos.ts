@@ -60,6 +60,7 @@ router.post("/", async (req, res) => {
 
     res.status(201).json(novoEquipamento[0]);
   } catch (error) {
+    console.error("Erro ao adicionar equipamento:", error); // Log detalhado
     res.status(500).json({ erro: "Erro ao adicionar equipamento" });
   }
 });
