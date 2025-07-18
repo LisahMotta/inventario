@@ -188,8 +188,8 @@ const Agendamentos: React.FC = () => {
       const aulaSelecionada = aulas.find(a => a.label === form.aula);
       if (!aulaSelecionada) throw new Error("Aula inválida");
       const dataBase = `${ano}-${String(mes + 1).padStart(2, "0")}-${form.data}`;
-      const data_inicio = `${dataBase}T${aulaSelecionada.inicio}:00.000Z`;
-      const data_fim = `${dataBase}T${aulaSelecionada.fim}:00.000Z`;
+      const data_inicio = new Date(`${dataBase}T${aulaSelecionada.inicio}:00.000Z`).toISOString();
+      const data_fim = new Date(`${dataBase}T${aulaSelecionada.fim}:00.000Z`).toISOString();
       let resp;
       if (editId) {
         resp = await fetch(`${API_URL}/agendamentos/${editId}`, {
