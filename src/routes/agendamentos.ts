@@ -39,9 +39,16 @@ router.get("/:id", async (req, res) => {
 // POST /agendamentos → cadastrar novo agendamento
 router.post("/", async (req, res) => {
   try {
+    // Converter datas para Date
+    const data_inicio = new Date(req.body.data_inicio);
+    const data_fim = new Date(req.body.data_fim);
     const novoAgendamento = await db
       .insert(agendamentos)
-      .values(req.body)
+      .values({
+        ...req.body,
+        data_inicio,
+        data_fim,
+      })
       .returning();
 
     res.status(201).json(novoAgendamento[0]);
@@ -55,9 +62,16 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    // Converter datas para Date
+    const data_inicio = req.body.data_inicio ? new Date(req.body.data_inicio) : undefined;
+    const data_fim = req.body.data_fim ? new Date(req.body.data_fim) : undefined;
     const atualizado = await db
       .update(agendamentos)
-      .set(req.body)
+      .set({
+        ...req.body,
+        ...(data_inicio && { data_inicio }),
+        ...(data_fim && { data_fim }),
+      })
       .where(eq(agendamentos.id, id))
       .returning();
 
