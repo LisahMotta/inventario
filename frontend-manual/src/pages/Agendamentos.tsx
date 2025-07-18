@@ -14,6 +14,15 @@ interface Agendamento {
   aula?: string;
 }
 
+// Adicionar interface para equipamento
+interface EquipamentoBusca {
+  id: number;
+  tipo: string;
+  marca: string;
+  modelo: string;
+  tombo: string;
+}
+
 const turnos = ["Manhã", "Tarde", "Noite"];
 // Definir turmas para cada período conforme solicitado
 const turmasManha = [
@@ -108,7 +117,10 @@ const Agendamentos: React.FC = () => {
   const [sucesso, setSucesso] = useState("");
   const [loading, setLoading] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
+  const [equipamentos, setEquipamentos] = useState<EquipamentoBusca[]>([]);
+  const [mostrarEquipamentos, setMostrarEquipamentos] = useState(false);
   const [filtroEquipamento, setFiltroEquipamento] = useState<string>("");
+  const [filtroEquipamentoAplicado, setFiltroEquipamentoAplicado] = useState<string>("");
   const [busca, setBusca] = useState("");
 
   // Filtros avançados
@@ -132,8 +144,18 @@ const Agendamentos: React.FC = () => {
     setAgendamentos(data);
   };
 
+  // Buscar equipamentos para filtro
+  const fetchEquipamentos = async () => {
+    // @ts-ignore
+    const API_URL = import.meta.env.VITE_API_URL || "";
+    const resp = await fetch(`${API_URL}/equipamentos`);
+    const data = await resp.json();
+    setEquipamentos(data);
+  };
+
   useEffect(() => {
     fetchAgendamentos();
+    fetchEquipamentos();
   }, [ano, mes]);
 
   const getAulasTurno = () => {
@@ -326,13 +348,25 @@ const Agendamentos: React.FC = () => {
     doc.save("agendamentos.pdf");
   };
 
+  // Novo filtro: busca por nome ou ID do equipamento
   const agendamentosFiltrados = agendamentos.filter(ag => {
     const matchBusca = !busca || 
       (ag.turma && ag.turma.toLowerCase().includes(busca.toLowerCase())) ||
       (ag.turno && ag.turno.toLowerCase().includes(busca.toLowerCase())) ||
       (ag.aula && ag.aula.toLowerCase().includes(busca.toLowerCase()));
     
-    const matchEquipamento = !filtroEquipamento || ag.equipamento_id.toString().includes(filtroEquipamento);
+    let matchEquipamento = true;
+    if (filtroEquipamentoAplicado) {
+      // Busca por ID ou nome
+      const eq = equipamentos.find(e => e.id === ag.equipamento_id);
+      matchEquipamento = eq && (
+        eq.id.toString().includes(filtroEquipamentoAplicado) ||
+        eq.tipo.toLowerCase().includes(filtroEquipamentoAplicado.toLowerCase()) ||
+        eq.marca.toLowerCase().includes(filtroEquipamentoAplicado.toLowerCase()) ||
+        eq.modelo.toLowerCase().includes(filtroEquipamentoAplicado.toLowerCase()) ||
+        eq.tombo.toLowerCase().includes(filtroEquipamentoAplicado.toLowerCase())
+      );
+    }
     const matchStatus = !filtroStatus || ag.status === filtroStatus;
     const matchTurma = !filtroTurma || ag.turma === filtroTurma;
     const matchTurno = !filtroTurno || ag.turno === filtroTurno;
@@ -442,14 +476,30 @@ const Agendamentos: React.FC = () => {
       {/* Filtros avançados */}
       <div className="bg-white shadow-md p-4 rounded-lg mb-6">
         <h3 className="text-lg font-semibold mb-3">Filtros Avançados</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <input
-            type="text"
-            placeholder="Filtrar por equipamento"
-            value={filtroEquipamento}
-            onChange={e => setFiltroEquipamento(e.target.value)}
-            className="border border-gray-300 rounded p-2"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-center">
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              placeholder="Filtrar por equipamento (ID, tipo, marca, modelo, tombo)"
+              value={filtroEquipamento}
+              onChange={e => setFiltroEquipamento(e.target.value)}
+              className="border border-gray-300 rounded p-2"
+            />
+            <button
+              type="button"
+              onClick={() => setFiltroEquipamentoAplicado(filtroEquipamento)}
+              className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition"
+            >
+              Mostrar Equipamentos
+            </button>
+            <button
+              type="button"
+              onClick={() => { setMostrarEquipamentos(m => !m); if (!equipamentos.length) fetchEquipamentos(); }}
+              className="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600 transition"
+            >
+              {mostrarEquipamentos ? "Ocultar Lista" : "Ver Lista"}
+            </button>
+          </div>
           <input
             type="date"
             placeholder="Data início"
@@ -491,6 +541,32 @@ const Agendamentos: React.FC = () => {
             {turnos.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
+        {mostrarEquipamentos && (
+          <div className="mt-4 max-h-48 overflow-y-auto border rounded p-2 bg-gray-50">
+            <table className="min-w-full text-xs">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tipo</th>
+                  <th>Marca</th>
+                  <th>Modelo</th>
+                  <th>Tombo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {equipamentos.map(eq => (
+                  <tr key={eq.id}>
+                    <td>{eq.id}</td>
+                    <td>{eq.tipo}</td>
+                    <td>{eq.marca}</td>
+                    <td>{eq.modelo}</td>
+                    <td>{eq.tombo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Controles de semana */}

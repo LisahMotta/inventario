@@ -31,6 +31,7 @@ const Equipamentos: React.FC = () => {
   const [filtroStatus, setFiltroStatus] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
+  const [mostrarLista, setMostrarLista] = useState(false);
 
   const navigate = useNavigate();
 
@@ -89,8 +90,8 @@ const Equipamentos: React.FC = () => {
   return (
     <div style={{ maxWidth: 900, margin: "40px auto" }}>
       <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Equipamentos</h1>
-      <button onClick={fetchEquipamentos} style={{ marginBottom: 16, backgroundColor: '#007bff', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-        Mostrar Equipamentos
+      <button onClick={() => { setMostrarLista(m => !m); if (!equipamentos.length) fetchEquipamentos(); }} style={{ marginBottom: 16, backgroundColor: '#007bff', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+        {mostrarLista ? 'Ocultar Equipamentos' : 'Mostrar Equipamentos'}
       </button>
       <div style={{ marginBottom: 16 }}>
         <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar (tipo, marca, modelo, tombo, status, observações)" style={{ width: 300, marginRight: 8 }} />
@@ -125,38 +126,40 @@ const Equipamentos: React.FC = () => {
         {erro && <div style={{ color: "red", marginTop: 10, fontWeight: 'bold', textShadow: '0 1px 2px #000' }}>{erro}</div>}
         {sucesso && <div style={{ color: "green", marginTop: 10, fontWeight: 'bold', textShadow: '0 1px 2px #000' }}>{sucesso}</div>}
       </form>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th style={{ color: '#fff', fontWeight: 'bold' }}>ID</th>
-            <th style={{ color: '#fff', fontWeight: 'bold' }}>Tipo</th>
-            <th style={{ color: '#fff', fontWeight: 'bold' }}>Marca</th>
-            <th style={{ color: '#fff', fontWeight: 'bold' }}>Modelo</th>
-            <th style={{ color: '#fff', fontWeight: 'bold' }}>Tombo</th>
-            <th style={{ color: '#fff', fontWeight: 'bold' }}>Status</th>
-            <th style={{ color: '#fff', fontWeight: 'bold' }}>Observações</th>
-            <th style={{ color: '#fff', fontWeight: 'bold' }}>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {equipamentosFiltrados.map((eq, index) => (
-            <tr key={eq.id}>
-              <td style={{ color: '#fff' }}>{index + 1}</td>
-              <td style={{ color: '#fff' }}>{eq.tipo}</td>
-              <td style={{ color: '#fff' }}>{eq.marca}</td>
-              <td style={{ color: '#fff' }}>{eq.modelo}</td>
-              <td style={{ color: '#fff' }}>{eq.tombo}</td>
-              <td style={{ color: '#fff' }}>{eq.status}</td>
-              <td style={{ color: '#fff' }}>{eq.observacoes}</td>
-              <td>
-                <button onClick={() => navigate(`/equipamento/${eq.id}`)} style={{ backgroundColor: '#6c757d', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', transition: 'background-color 0.3s ease, box-shadow 0.3s ease' }}>
-                  Ver histórico
-                </button>
-              </td>
+      {mostrarLista && (
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th style={{ color: '#fff', fontWeight: 'bold' }}>ID</th>
+              <th style={{ color: '#fff', fontWeight: 'bold' }}>Tipo</th>
+              <th style={{ color: '#fff', fontWeight: 'bold' }}>Marca</th>
+              <th style={{ color: '#fff', fontWeight: 'bold' }}>Modelo</th>
+              <th style={{ color: '#fff', fontWeight: 'bold' }}>Tombo</th>
+              <th style={{ color: '#fff', fontWeight: 'bold' }}>Status</th>
+              <th style={{ color: '#fff', fontWeight: 'bold' }}>Observações</th>
+              <th style={{ color: '#fff', fontWeight: 'bold' }}>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {equipamentosFiltrados.map((eq, index) => (
+              <tr key={eq.id}>
+                <td style={{ color: '#fff' }}>{index + 1}</td>
+                <td style={{ color: '#fff' }}>{eq.tipo}</td>
+                <td style={{ color: '#fff' }}>{eq.marca}</td>
+                <td style={{ color: '#fff' }}>{eq.modelo}</td>
+                <td style={{ color: '#fff' }}>{eq.tombo}</td>
+                <td style={{ color: '#fff' }}>{eq.status}</td>
+                <td style={{ color: '#fff' }}>{eq.observacoes}</td>
+                <td>
+                  <button onClick={() => navigate(`/equipamento/${eq.id}`)} style={{ backgroundColor: '#6c757d', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', transition: 'background-color 0.3s ease, box-shadow 0.3s ease' }}>
+                    Ver histórico
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
