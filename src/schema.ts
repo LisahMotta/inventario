@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, varchar, text, timestamp } from "drizzle-orm/pg-core";
 
 // Criação da tabela 'equipamentos'
 export const equipamentos = pgTable("equipamentos", {
@@ -15,7 +15,7 @@ export const equipamentos = pgTable("equipamentos", {
 // Criação da tabela 'agendamentos'
 export const agendamentos = pgTable("agendamentos", {
   id: serial("id").primaryKey(), // ID auto incremental
-  equipamento_id: serial("equipamento_id").notNull(), // FK para equipamentos
+  equipamento_id: integer("equipamento_id").notNull(), // FK para equipamentos
   data_inicio: timestamp("data_inicio").notNull(), // Início do agendamento
   data_fim: timestamp("data_fim").notNull(), // Fim do agendamento
   status: varchar("status", { length: 50 }).notNull(), // Status do agendamento
@@ -26,7 +26,7 @@ export const agendamentos = pgTable("agendamentos", {
 // Criação da tabela 'manutencoes'
 export const manutencoes = pgTable("manutencoes", {
   id: serial("id").primaryKey(), // ID auto incremental
-  equipamento_id: serial("equipamento_id").notNull(), // FK para equipamentos
+  equipamento_id: integer("equipamento_id").notNull(), // FK para equipamentos
   data_manutencao: timestamp("data_manutencao").notNull(), // Data da manutenção
   descricao: text("descricao").notNull(), // Descrição da manutenção
   responsavel: varchar("responsavel", { length: 100 }), // Responsável pela manutenção
@@ -48,8 +48,8 @@ export const usuarios = pgTable("usuarios", {
 // Criação da tabela 'emprestimos'
 export const emprestimos = pgTable("emprestimos", {
   id: serial("id").primaryKey(),
-  equipamento_id: serial("equipamento_id").notNull(), // FK para equipamentos
-  usuario_id: serial("usuario_id").notNull(), // FK para usuários
+  equipamento_id: integer("equipamento_id").notNull(), // FK para equipamentos
+  usuario_id: integer("usuario_id").notNull(), // FK para usuários
   data_emprestimo: timestamp("data_emprestimo").notNull(),
   data_devolucao: timestamp("data_devolucao"),
   status: varchar("status", { length: 50 }).notNull(), // emprestado, devolvido

@@ -1,17 +1,11 @@
 //// <reference types="node" />
-import type { Config } from "drizzle-kit";
-import * as dotenv from "dotenv";
+import { defineConfig } from "drizzle-kit";
 
-dotenv.config();
-
-console.log("🔍 DATABASE_URL:", process.env.DATABASE_URL);
-
-export default {
+export default defineConfig({
   schema: "./src/schema.ts",
   out: "./drizzle",
-  dialect: "postgresql",
+  dialect: "sqlite",
   dbCredentials: {
-    // ✅ ESTA É A CHAVE CERTA PARA O DRIZZLE
-    url: process.env.DATABASE_URL!,
-  },
-} satisfies Config;
+    url: "./sqlite.db"
+  }
+});

@@ -40,7 +40,11 @@ self.addEventListener('fetch', (event) => {
             const responseToCache = response.clone();
 
             // Verificar se a requisição pode ser cacheada
-            if (event.request.url.startsWith('http') && !event.request.url.includes('chrome-extension')) {
+            if (
+              event.request.method === 'GET' &&
+              event.request.url.startsWith('http') &&
+              !event.request.url.includes('chrome-extension')
+            ) {
               caches.open(CACHE_NAME)
                 .then((cache) => {
                   cache.put(event.request, responseToCache);
