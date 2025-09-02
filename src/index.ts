@@ -113,6 +113,23 @@ export const createTables = async () => {
       );
     `);
     
+    console.log("Criando tabela equipamentos_inserviveis...");
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS equipamentos_inserviveis (
+        id SERIAL PRIMARY KEY,
+        equipamento_id INTEGER NOT NULL,
+        tipo VARCHAR(100) NOT NULL,
+        marca VARCHAR(100) NOT NULL,
+        modelo VARCHAR(100) NOT NULL,
+        tombo VARCHAR(100) NOT NULL UNIQUE,
+        motivo_inservivel VARCHAR(200) NOT NULL,
+        data_baixa TIMESTAMP NOT NULL,
+        responsavel_baixa VARCHAR(100) NOT NULL,
+        observacoes TEXT,
+        criado_em TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    
     await pool.end();
     console.log("Todas as tabelas criadas com sucesso!");
   } catch (error) {
