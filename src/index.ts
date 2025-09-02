@@ -77,6 +77,9 @@ export const createTables = async () => {
         data_fim TIMESTAMP NOT NULL,
         status VARCHAR(50) NOT NULL,
         observacoes TEXT,
+        turma VARCHAR(100),
+        turno VARCHAR(20),
+        aula VARCHAR(20),
         criado_em TIMESTAMP DEFAULT NOW()
       );
     `);

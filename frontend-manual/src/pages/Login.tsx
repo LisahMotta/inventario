@@ -90,8 +90,6 @@ const Login: React.FC = () => {
     <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #0f2027 0%, #2c5364 100%)',
-      backgroundImage: `url('https://www.transparenttextures.com/patterns/circuit-board.png'), linear-gradient(135deg, #0f2027 0%, #2c5364 100%)`,
-      backgroundRepeat: 'repeat',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center'

@@ -20,6 +20,9 @@ export const agendamentos = pgTable("agendamentos", {
   data_fim: timestamp("data_fim").notNull(), // Fim do agendamento
   status: varchar("status", { length: 50 }).notNull(), // Status do agendamento
   observacoes: text("observacoes"), // Observações
+  turma: varchar("turma", { length: 100 }), // Turma do agendamento
+  turno: varchar("turno", { length: 20 }), // Turno do agendamento
+  aula: varchar("aula", { length: 20 }), // Aula do agendamento
   criado_em: timestamp("criado_em").defaultNow(), // Data/hora de criação
 });
 

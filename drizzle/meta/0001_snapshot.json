@@ -1,0 +1,337 @@
+{
+  "id": "4716345b-5d34-4d17-848e-ea390b8a0557",
+  "prevId": "e7e65e28-1305-49fb-a722-c99e25207ad7",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.agendamentos": {
+      "name": "agendamentos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "equipamento_id": {
+          "name": "equipamento_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data_inicio": {
+          "name": "data_inicio",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data_fim": {
+          "name": "data_fim",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observacoes": {
+          "name": "observacoes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "turma": {
+          "name": "turma",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "turno": {
+          "name": "turno",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aula": {
+          "name": "aula",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.emprestimos": {
+      "name": "emprestimos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "equipamento_id": {
+          "name": "equipamento_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "usuario_id": {
+          "name": "usuario_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data_emprestimo": {
+          "name": "data_emprestimo",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data_devolucao": {
+          "name": "data_devolucao",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observacoes": {
+          "name": "observacoes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.equipamentos": {
+      "name": "equipamentos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "marca": {
+          "name": "marca",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modelo": {
+          "name": "modelo",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tombo": {
+          "name": "tombo",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observacoes": {
+          "name": "observacoes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "equipamentos_tombo_unique": {
+          "name": "equipamentos_tombo_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "tombo"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.manutencoes": {
+      "name": "manutencoes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "equipamento_id": {
+          "name": "equipamento_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data_manutencao": {
+          "name": "data_manutencao",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descricao": {
+          "name": "descricao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "responsavel": {
+          "name": "responsavel",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observacoes": {
+          "name": "observacoes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.usuarios": {
+      "name": "usuarios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nome": {
+          "name": "nome",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "senha": {
+          "name": "senha",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
