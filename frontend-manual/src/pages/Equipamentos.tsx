@@ -35,8 +35,7 @@ const Equipamentos: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // @ts-ignore
-  const API_URL = import.meta.env.VITE_API_URL || "";
+  const API_URL = "https://inventario-5cah.onrender.com";
 
   const fetchEquipamentos = async () => {
     const resp = await fetch(`${API_URL}/equipamentos`);
