@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Emprestimos from "./pages/Emprestimos";
 import EquipamentoLeitorQR from "./pages/EquipamentoLeitorQR";
 import EquipamentoDetalhe from "./pages/EquipamentoDetalhe";
+import EquipamentosInserviveis from "./pages/EquipamentosInserviveis";
 import { useAuth } from "./AuthContext";
 import { SyncProvider } from "./contexts/SyncContext";
 import SyncStatus from "./components/SyncStatus";
@@ -79,6 +80,7 @@ const App: React.FC = () => {
             {podeAgendar && <Link to="/agendamentos" style={navLinkStyle}>Agendamentos</Link>}
             {podeEmprestar && <Link to="/emprestimos" style={navLinkStyle}>Empréstimos</Link>}
             <Link to="/manutencoes" style={navLinkStyle}>Manutenções</Link>
+            <Link to="/equipamentos-inserviveis" style={navLinkStyle}>Inservíveis</Link>
             {isAdmin && <Link to="/usuarios" style={navLinkStyle}>Usuários</Link>}
             <Link to="/leitorqr" style={navLinkStyle}>Leitor QR</Link>
           </div>
@@ -107,6 +109,7 @@ const App: React.FC = () => {
           {podeAgendar && <Route path="/agendamentos" element={<Agendamentos />} />}
           <Route path="/manutencoes" element={<Manutencoes />} />
           {podeEmprestar && <Route path="/emprestimos" element={<Emprestimos />} />}
+          <Route path="/equipamentos-inserviveis" element={<EquipamentosInserviveis />} />
           {isAdmin && <Route path="/usuarios" element={<Usuarios />} />}
           <Route path="/leitorqr" element={<EquipamentoLeitorQR />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />

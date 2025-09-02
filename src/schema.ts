@@ -59,3 +59,18 @@ export const emprestimos = pgTable("emprestimos", {
   observacoes: text("observacoes"),
   criado_em: timestamp("criado_em").defaultNow(),
 });
+
+// Criação da tabela 'equipamentos_inserviveis'
+export const equipamentosInserviveis = pgTable("equipamentos_inserviveis", {
+  id: serial("id").primaryKey(), // ID auto incremental
+  equipamento_id: integer("equipamento_id").notNull(), // FK para equipamentos (opcional)
+  tipo: varchar("tipo", { length: 100 }).notNull(), // Tipo do equipamento
+  marca: varchar("marca", { length: 100 }).notNull(), // Marca do equipamento
+  modelo: varchar("modelo", { length: 100 }).notNull(), // Modelo
+  tombo: varchar("tombo", { length: 100 }).notNull().unique(), // Código patrimonial único
+  motivo_inservivel: varchar("motivo_inservivel", { length: 200 }).notNull(), // Motivo pelo qual é inservível
+  data_baixa: timestamp("data_baixa").notNull(), // Data da baixa do patrimônio
+  responsavel_baixa: varchar("responsavel_baixa", { length: 100 }).notNull(), // Quem fez a baixa
+  observacoes: text("observacoes"), // Observações adicionais
+  criado_em: timestamp("criado_em").defaultNow(), // Data/hora de criação
+});

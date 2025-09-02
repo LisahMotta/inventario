@@ -9,6 +9,7 @@ import agendamentosRoutes from "./routes/agendamentos";
 import usuariosRoutes from "./routes/usuarios";
 import manutencoesRoutes from "./routes/manutencoes";
 import emprestimosRoutes from "./routes/emprestimos";
+import equipamentosInserviveisRoutes from "./routes/equipamentosInserviveis";
 
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 console.log("NODE_ENV:", process.env.NODE_ENV);
@@ -158,6 +159,7 @@ app.use("/agendamentos", agendamentosRoutes);
 app.use("/usuarios", usuariosRoutes);
 app.use("/manutencoes", manutencoesRoutes);
 app.use("/emprestimos", emprestimosRoutes);
+app.use("/equipamentos-inserviveis", equipamentosInserviveisRoutes);
 
 // Servir arquivos estáticos do frontend
 app.use(express.static(path.join(__dirname, "../frontend-manual/dist")));
