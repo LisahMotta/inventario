@@ -117,7 +117,7 @@ export const createTables = async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS equipamentos_inserviveis (
         id SERIAL PRIMARY KEY,
-        equipamento_id INTEGER NOT NULL,
+        equipamento_id INTEGER,
         tipo VARCHAR(100) NOT NULL,
         marca VARCHAR(100) NOT NULL,
         modelo VARCHAR(100) NOT NULL,
