@@ -63,7 +63,7 @@ export const emprestimos = pgTable("emprestimos", {
 // Criação da tabela 'equipamentos_inserviveis'
 export const equipamentosInserviveis = pgTable("equipamentos_inserviveis", {
   id: serial("id").primaryKey(), // ID auto incremental
-  equipamento_id: integer("equipamento_id").notNull(), // FK para equipamentos (opcional)
+  equipamento_id: integer("equipamento_id"), // FK para equipamentos (opcional)
   tipo: varchar("tipo", { length: 100 }).notNull(), // Tipo do equipamento
   marca: varchar("marca", { length: 100 }).notNull(), // Marca do equipamento
   modelo: varchar("modelo", { length: 100 }).notNull(), // Modelo
