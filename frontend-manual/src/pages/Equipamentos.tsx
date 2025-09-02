@@ -94,6 +94,8 @@ const Equipamentos: React.FC = () => {
     return buscaOk && statusOk && tipoOk && marcaOk;
   });
 
+  console.log("Equipamentos filtrados:", equipamentosFiltrados.length, "de", equipamentos.length);
+
   return (
     <div style={{ maxWidth: 900, margin: "40px auto" }}>
       <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Equipamentos</h1>
