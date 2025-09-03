@@ -13,6 +13,12 @@ interface Equipamento {
 
 const Equipamentos: React.FC = () => {
   const [equipamentos, setEquipamentos] = useState<Equipamento[]>([]);
+  
+  // Log quando o estado muda
+  useEffect(() => {
+    console.log("ESTADO EQUIPAMENTOS MUDOU:", equipamentos);
+    console.log("QUANTIDADE NO ESTADO:", equipamentos.length);
+  }, [equipamentos]);
   const [form, setForm] = useState<Omit<Equipamento, "id">>({
     tipo: "",
     marca: "",
@@ -41,12 +47,23 @@ const Equipamentos: React.FC = () => {
       const resp = await fetch(`${API_URL}/equipamentos`);
       console.log("RESPOSTA:", resp.status);
       
+      if (!resp.ok) {
+        throw new Error(`HTTP error! status: ${resp.status}`);
+      }
+      
       const data = await resp.json();
       console.log("DADOS RECEBIDOS:", data);
       console.log("QUANTIDADE:", data.length);
+      console.log("TIPO:", typeof data);
+      console.log("É ARRAY:", Array.isArray(data));
       
-      setEquipamentos(data);
-      alert(`EQUIPAMENTOS CARREGADOS: ${data.length}`);
+      if (Array.isArray(data)) {
+        setEquipamentos(data);
+        alert(`EQUIPAMENTOS CARREGADOS: ${data.length}`);
+      } else {
+        alert("ERRO: Dados não são um array!");
+        console.error("Dados não são um array:", data);
+      }
       
     } catch (error) {
       console.error("ERRO:", error);
