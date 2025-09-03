@@ -92,19 +92,14 @@ const Equipamentos: React.FC = () => {
     }
   };
 
-  // Filtro avançado
-  const equipamentosFiltrados = equipamentos.filter(eq => {
-    const buscaOk = !busca || [eq.tipo, eq.marca, eq.modelo, eq.tombo, eq.status, eq.observacoes].some(v => v && v.toLowerCase().includes(busca.toLowerCase()));
-    const statusOk = !filtroStatus || eq.status === filtroStatus;
-    const tipoOk = !filtroTipo || eq.tipo.toLowerCase().includes(filtroTipo.toLowerCase());
-    const marcaOk = !filtroMarca || eq.marca.toLowerCase().includes(filtroMarca.toLowerCase());
-    return buscaOk && statusOk && tipoOk && marcaOk;
-  });
+  // Filtro avançado - simplificado para debug
+  const equipamentosFiltrados = equipamentos; // Temporariamente sem filtros
 
   console.log("Equipamentos filtrados:", equipamentosFiltrados.length, "de", equipamentos.length);
   console.log("Equipamentos originais:", equipamentos);
   console.log("Equipamentos filtrados:", equipamentosFiltrados);
 
+  console.log("Componente renderizando, equipamentos:", equipamentos.length);
   return (
     <div style={{ maxWidth: 900, margin: "40px auto" }}>
       <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Equipamentos</h1>
