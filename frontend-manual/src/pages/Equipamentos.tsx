@@ -14,6 +14,11 @@ interface Equipamento {
 
 const Equipamentos: React.FC = () => {
   const [equipamentos, setEquipamentos] = useState<Equipamento[]>([]);
+  
+  // Log quando o estado muda
+  useEffect(() => {
+    console.log("Estado equipamentos mudou:", equipamentos);
+  }, [equipamentos]);
   const [form, setForm] = useState<Omit<Equipamento, "id">>({
     tipo: "",
     marca: "",
@@ -44,6 +49,8 @@ const Equipamentos: React.FC = () => {
       console.log("Resposta da API:", resp.status);
       const data = await resp.json();
       console.log("Dados recebidos:", data);
+      console.log("Tipo dos dados:", typeof data);
+      console.log("É array?", Array.isArray(data));
       setEquipamentos(data);
       console.log("Equipamentos atualizados no estado:", data.length);
     } catch (error) {
