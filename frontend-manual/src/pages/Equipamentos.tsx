@@ -115,8 +115,16 @@ const Equipamentos: React.FC = () => {
   console.log("MOSTRAR LISTA:", mostrarLista);
 
   return (
-    <div style={{ maxWidth: 900, margin: "40px auto" }}>
+    <div style={{ maxWidth: 900, margin: "40px auto", backgroundColor: 'rgba(0,0,0,0.8)', padding: 20, borderRadius: 10 }}>
       <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Equipamentos</h1>
+      
+      {/* DEBUG INFO */}
+      <div style={{ color: '#fff', marginBottom: 20, padding: 10, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 5 }}>
+        <strong>DEBUG INFO:</strong><br/>
+        Equipamentos no estado: {equipamentos.length}<br/>
+        Mostrar lista: {mostrarLista ? 'SIM' : 'NÃO'}<br/>
+        Dados: {JSON.stringify(equipamentos.slice(0, 2))}
+      </div>
       
       <button 
         onClick={() => { 
@@ -164,6 +172,16 @@ const Equipamentos: React.FC = () => {
         {sucesso && <div style={{ color: "green", marginTop: 10, fontWeight: 'bold', textShadow: '0 1px 2px #000' }}>{sucesso}</div>}
       </form>
 
+      {/* LISTA SIMPLES */}
+      <div style={{ color: '#fff', marginBottom: 20 }}>
+        <h3>Lista Simples (Debug):</h3>
+        {equipamentos.map((eq, index) => (
+          <div key={eq.id} style={{ padding: 10, margin: 5, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 5 }}>
+            <strong>{index + 1}. {eq.tipo} - {eq.marca} {eq.modelo} ({eq.tombo})</strong>
+          </div>
+        ))}
+      </div>
+
       {mostrarLista && (
         <div>
           <div style={{ color: '#fff', marginBottom: 10 }}>
@@ -175,30 +193,30 @@ const Equipamentos: React.FC = () => {
               Nenhum equipamento encontrado
             </div>
           ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #fff" }}>
               <thead>
                 <tr>
-                  <th style={{ color: '#fff', fontWeight: 'bold' }}>ID</th>
-                  <th style={{ color: '#fff', fontWeight: 'bold' }}>Tipo</th>
-                  <th style={{ color: '#fff', fontWeight: 'bold' }}>Marca</th>
-                  <th style={{ color: '#fff', fontWeight: 'bold' }}>Modelo</th>
-                  <th style={{ color: '#fff', fontWeight: 'bold' }}>Tombo</th>
-                  <th style={{ color: '#fff', fontWeight: 'bold' }}>Status</th>
-                  <th style={{ color: '#fff', fontWeight: 'bold' }}>Observações</th>
-                  <th style={{ color: '#fff', fontWeight: 'bold' }}>Ações</th>
+                  <th style={{ color: '#fff', fontWeight: 'bold', border: "1px solid #fff", padding: 8 }}>ID</th>
+                  <th style={{ color: '#fff', fontWeight: 'bold', border: "1px solid #fff", padding: 8 }}>Tipo</th>
+                  <th style={{ color: '#fff', fontWeight: 'bold', border: "1px solid #fff", padding: 8 }}>Marca</th>
+                  <th style={{ color: '#fff', fontWeight: 'bold', border: "1px solid #fff", padding: 8 }}>Modelo</th>
+                  <th style={{ color: '#fff', fontWeight: 'bold', border: "1px solid #fff", padding: 8 }}>Tombo</th>
+                  <th style={{ color: '#fff', fontWeight: 'bold', border: "1px solid #fff", padding: 8 }}>Status</th>
+                  <th style={{ color: '#fff', fontWeight: 'bold', border: "1px solid #fff", padding: 8 }}>Observações</th>
+                  <th style={{ color: '#fff', fontWeight: 'bold', border: "1px solid #fff", padding: 8 }}>Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {equipamentosFiltrados.map((eq, index) => (
                   <tr key={eq.id}>
-                    <td style={{ color: '#fff' }}>{index + 1}</td>
-                    <td style={{ color: '#fff' }}>{eq.tipo}</td>
-                    <td style={{ color: '#fff' }}>{eq.marca}</td>
-                    <td style={{ color: '#fff' }}>{eq.modelo}</td>
-                    <td style={{ color: '#fff' }}>{eq.tombo}</td>
-                    <td style={{ color: '#fff' }}>{eq.status}</td>
-                    <td style={{ color: '#fff' }}>{eq.observacoes}</td>
-                    <td>
+                    <td style={{ color: '#fff', border: "1px solid #fff", padding: 8 }}>{index + 1}</td>
+                    <td style={{ color: '#fff', border: "1px solid #fff", padding: 8 }}>{eq.tipo}</td>
+                    <td style={{ color: '#fff', border: "1px solid #fff", padding: 8 }}>{eq.marca}</td>
+                    <td style={{ color: '#fff', border: "1px solid #fff", padding: 8 }}>{eq.modelo}</td>
+                    <td style={{ color: '#fff', border: "1px solid #fff", padding: 8 }}>{eq.tombo}</td>
+                    <td style={{ color: '#fff', border: "1px solid #fff", padding: 8 }}>{eq.status}</td>
+                    <td style={{ color: '#fff', border: "1px solid #fff", padding: 8 }}>{eq.observacoes}</td>
+                    <td style={{ border: "1px solid #fff", padding: 8 }}>
                       <button onClick={() => navigate(`/equipamento/${eq.id}`)} style={{ backgroundColor: '#6c757d', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', transition: 'background-color 0.3s ease, box-shadow 0.3s ease' }}>
                         Ver histórico
                       </button>
