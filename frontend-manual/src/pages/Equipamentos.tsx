@@ -102,6 +102,8 @@ const Equipamentos: React.FC = () => {
   });
 
   console.log("Equipamentos filtrados:", equipamentosFiltrados.length, "de", equipamentos.length);
+  console.log("Equipamentos originais:", equipamentos);
+  console.log("Equipamentos filtrados:", equipamentosFiltrados);
 
   return (
     <div style={{ maxWidth: 900, margin: "40px auto" }}>
