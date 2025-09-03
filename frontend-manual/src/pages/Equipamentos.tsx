@@ -52,6 +52,7 @@ const Equipamentos: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log("Componente montado, buscando equipamentos...");
     fetchEquipamentos();
   }, []);
 
@@ -149,40 +150,43 @@ const Equipamentos: React.FC = () => {
         {erro && <div style={{ color: "red", marginTop: 10, fontWeight: 'bold', textShadow: '0 1px 2px #000' }}>{erro}</div>}
         {sucesso && <div style={{ color: "green", marginTop: 10, fontWeight: 'bold', textShadow: '0 1px 2px #000' }}>{sucesso}</div>}
       </form>
-      {mostrarLista && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th style={{ color: '#fff', fontWeight: 'bold' }}>ID</th>
-              <th style={{ color: '#fff', fontWeight: 'bold' }}>Tipo</th>
-              <th style={{ color: '#fff', fontWeight: 'bold' }}>Marca</th>
-              <th style={{ color: '#fff', fontWeight: 'bold' }}>Modelo</th>
-              <th style={{ color: '#fff', fontWeight: 'bold' }}>Tombo</th>
-              <th style={{ color: '#fff', fontWeight: 'bold' }}>Status</th>
-              <th style={{ color: '#fff', fontWeight: 'bold' }}>Observações</th>
-              <th style={{ color: '#fff', fontWeight: 'bold' }}>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {equipamentosFiltrados.map((eq, index) => (
-              <tr key={eq.id}>
-                <td style={{ color: '#fff' }}>{index + 1}</td>
-                <td style={{ color: '#fff' }}>{eq.tipo}</td>
-                <td style={{ color: '#fff' }}>{eq.marca}</td>
-                <td style={{ color: '#fff' }}>{eq.modelo}</td>
-                <td style={{ color: '#fff' }}>{eq.tombo}</td>
-                <td style={{ color: '#fff' }}>{eq.status}</td>
-                <td style={{ color: '#fff' }}>{eq.observacoes}</td>
-                <td>
-                  <button onClick={() => navigate(`/equipamento/${eq.id}`)} style={{ backgroundColor: '#6c757d', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', transition: 'background-color 0.3s ease, box-shadow 0.3s ease' }}>
-                    Ver histórico
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+                    {mostrarLista && (
+         <div>
+           {(() => { console.log("Renderizando lista, equipamentos:", equipamentos.length, "filtrados:", equipamentosFiltrados.length); return null; })()}
+           <table style={{ width: "100%", borderCollapse: "collapse" }}>
+           <thead>
+             <tr>
+               <th style={{ color: '#fff', fontWeight: 'bold' }}>ID</th>
+               <th style={{ color: '#fff', fontWeight: 'bold' }}>Tipo</th>
+               <th style={{ color: '#fff', fontWeight: 'bold' }}>Marca</th>
+               <th style={{ color: '#fff', fontWeight: 'bold' }}>Modelo</th>
+               <th style={{ color: '#fff', fontWeight: 'bold' }}>Tombo</th>
+               <th style={{ color: '#fff', fontWeight: 'bold' }}>Status</th>
+               <th style={{ color: '#fff', fontWeight: 'bold' }}>Observações</th>
+               <th style={{ color: '#fff', fontWeight: 'bold' }}>Ações</th>
+             </tr>
+           </thead>
+           <tbody>
+             {equipamentosFiltrados.map((eq, index) => (
+               <tr key={eq.id}>
+                 <td style={{ color: '#fff' }}>{index + 1}</td>
+                 <td style={{ color: '#fff' }}>{eq.tipo}</td>
+                 <td style={{ color: '#fff' }}>{eq.marca}</td>
+                 <td style={{ color: '#fff' }}>{eq.modelo}</td>
+                 <td style={{ color: '#fff' }}>{eq.tombo}</td>
+                 <td style={{ color: '#fff' }}>{eq.status}</td>
+                 <td style={{ color: '#fff' }}>{eq.observacoes}</td>
+                 <td>
+                   <button onClick={() => navigate(`/equipamento/${eq.id}`)} style={{ backgroundColor: '#6c757d', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', transition: 'background-color 0.3s ease, box-shadow 0.3s ease' }}>
+                     Ver histórico
+                   </button>
+                 </td>
+               </tr>
+             ))}
+           </tbody>
+         </table>
+         </div>
+       )}
     </div>
   );
 };
