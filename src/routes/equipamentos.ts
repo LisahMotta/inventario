@@ -2,7 +2,7 @@ import { Router } from "express";
 import { db } from "../db";
 import { equipamentos } from "../schema";
 import { eq } from "drizzle-orm";
-import { generateEquipmentQRCode } from "../services/qrcode.service";
+// import { generateEquipmentQRCode } from "../services/qrcode.service";
 
 const router = Router();
 
@@ -17,19 +17,19 @@ router.get("/", async (req, res) => {
 });
 
 // Endpoint para retornar o QR Code do equipamento (DEVE VIR ANTES DE /:id)
-router.get("/:id/qrcode", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const qr = await generateEquipmentQRCode(id);
-    // qr é uma dataURL base64, precisamos extrair o base64
-    const base64Data = qr.replace(/^data:image\/png;base64,/, "");
-    const img = Buffer.from(base64Data, "base64");
-    res.type("image/png");
-    res.send(img);
-  } catch (e) {
-    res.status(500).json({ error: "Erro ao gerar QR Code" });
-  }
-});
+// router.get("/:id/qrcode", async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const qr = await generateEquipmentQRCode(id);
+//     // qr é uma dataURL base64, precisamos extrair o base64
+//     const base64Data = qr.replace(/^data:image\/png;base64,/, "");
+//     const img = Buffer.from(base64Data, "base64");
+//     res.type("image/png");
+//     res.send(img);
+//   } catch (e) {
+//     res.status(500).json({ error: "Erro ao gerar QR Code" });
+//   }
+// });
 
 // GET /equipamentos/:id → busca por ID (DEVE VIR DEPOIS DE /:id/qrcode)
 router.get("/:id", async (req, res) => {
