@@ -31,7 +31,7 @@ const Equipamentos: React.FC = () => {
   const [filtroStatus, setFiltroStatus] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
-  const [mostrarLista, setMostrarLista] = useState(false);
+  const [mostrarLista, setMostrarLista] = useState(true);
 
   const navigate = useNavigate();
 
@@ -112,10 +112,7 @@ const Equipamentos: React.FC = () => {
          const novoEstado = !mostrarLista;
          setMostrarLista(novoEstado); 
          console.log("Mostrar lista:", novoEstado, "Equipamentos no estado:", equipamentos.length);
-         if (!equipamentos.length) {
-           console.log("Lista vazia, buscando equipamentos...");
-           fetchEquipamentos();
-         }
+         fetchEquipamentos();
        }} style={{ marginBottom: 16, backgroundColor: '#007bff', color: '#fff', padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
          {mostrarLista ? 'Ocultar Equipamentos' : 'Mostrar Equipamentos'}
        </button>
