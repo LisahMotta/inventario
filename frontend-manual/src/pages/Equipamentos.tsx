@@ -65,20 +65,26 @@ const Equipamentos: React.FC = () => {
     setSucesso("");
     setLoading(true);
     try {
+      console.log("Enviando dados:", form);
       const resp = await fetch(`${API_URL}/equipamentos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      console.log("Resposta do cadastro:", resp.status);
       if (resp.ok) {
+        const data = await resp.json();
+        console.log("Equipamento cadastrado:", data);
         setSucesso("Equipamento cadastrado!");
         setForm({ tipo: "", marca: "", modelo: "", tombo: "", status: "disponível", observacoes: "" });
         fetchEquipamentos();
       } else {
         const data = await resp.json();
+        console.error("Erro na resposta:", data);
         setErro(data.erro || "Erro ao cadastrar equipamento");
       }
     } catch (err) {
+      console.error("Erro na requisição:", err);
       setErro("Erro ao conectar com o servidor");
     } finally {
       setLoading(false);
