@@ -44,20 +44,22 @@ const Equipamentos: React.FC = () => {
 
   const fetchEquipamentos = async () => {
     try {
-      console.log("=== INÍCIO DO FETCH ===");
-      console.log("Fazendo fetch dos equipamentos...");
+      console.log("🚀 === INÍCIO DO FETCH ===");
+      console.log("🚀 Fazendo fetch dos equipamentos...");
       const resp = await fetch(`${API_URL}/equipamentos`);
-      console.log("Resposta da API:", resp.status);
+      console.log("🚀 Resposta da API:", resp.status);
       const data = await resp.json();
-      console.log("Dados recebidos:", data);
-      console.log("Tipo dos dados:", typeof data);
-      console.log("É array?", Array.isArray(data));
-      console.log("Length dos dados:", data.length);
+      console.log("🚀 Dados recebidos:", data);
+      console.log("🚀 Tipo dos dados:", typeof data);
+      console.log("🚀 É array?", Array.isArray(data));
+      console.log("🚀 Length dos dados:", data.length);
       setEquipamentos(data);
-      console.log("setEquipamentos chamado com:", data);
-      console.log("=== FIM DO FETCH ===");
+      console.log("🚀 setEquipamentos chamado com:", data);
+      alert(`🚀 Equipamentos carregados: ${data.length}`);
+      console.log("🚀 === FIM DO FETCH ===");
     } catch (error) {
-      console.error("Erro ao buscar equipamentos:", error);
+      console.error("❌ Erro ao buscar equipamentos:", error);
+      alert("❌ Erro ao buscar equipamentos: " + error);
     }
   };
 
@@ -105,15 +107,16 @@ const Equipamentos: React.FC = () => {
   // Filtro avançado - simplificado para debug
   const equipamentosFiltrados = equipamentos; // Temporariamente sem filtros
 
-  console.log("Equipamentos filtrados:", equipamentosFiltrados.length, "de", equipamentos.length);
-  console.log("Equipamentos originais:", equipamentos);
-  console.log("Equipamentos filtrados:", equipamentosFiltrados);
+  // Logs mais visíveis
+  console.log("🔍 DEBUG - Equipamentos filtrados:", equipamentosFiltrados.length, "de", equipamentos.length);
+  console.log("🔍 DEBUG - Equipamentos originais:", equipamentos);
+  console.log("🔍 DEBUG - Equipamentos filtrados:", equipamentosFiltrados);
 
-  console.log("=== RENDERIZAÇÃO ===");
-  console.log("Componente renderizando, equipamentos:", equipamentos.length);
-  console.log("Equipamentos no estado:", equipamentos);
-  console.log("Mostrar lista:", mostrarLista);
-  console.log("=== FIM RENDERIZAÇÃO ===");
+  console.log("🎯 === RENDERIZAÇÃO ===");
+  console.log("🎯 Componente renderizando, equipamentos:", equipamentos.length);
+  console.log("🎯 Equipamentos no estado:", equipamentos);
+  console.log("🎯 Mostrar lista:", mostrarLista);
+  console.log("🎯 === FIM RENDERIZAÇÃO ===");
   return (
     <div style={{ maxWidth: 900, margin: "40px auto" }}>
       <h1 style={{ textAlign: 'center', color: '#fff', marginBottom: 24, textShadow: '0 2px 8px #000c', fontSize: 32, fontWeight: 800, letterSpacing: 1 }}>Equipamentos</h1>
