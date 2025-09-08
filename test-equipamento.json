@@ -1,0 +1,10 @@
+{
+  "tipo": "Notebook",
+  "marca": "Dell",
+  "modelo": "Inspiron 15",
+  "tombo": "12345",
+  "motivo_inservivel": "Tela quebrada",
+  "data_baixa": "2024-01-15",
+  "responsavel_baixa": "João Silva",
+  "observacoes": "Teste de cadastro"
+}

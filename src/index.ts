@@ -38,99 +38,97 @@ const testDatabaseConnection = async () => {
 export const createTables = async () => {
   try {
     console.log("Criando tabelas manualmente...");
-    const { Pool } = await import("pg");
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-    });
+    const Database = (await import("better-sqlite3")).default;
+    const sqlite = new Database("inventario.db");
     
     console.log("Criando tabela usuarios...");
-    await pool.query(`
+    sqlite.exec(`
       CREATE TABLE IF NOT EXISTS usuarios (
-        id SERIAL PRIMARY KEY,
-        nome VARCHAR(100) NOT NULL,
-        email VARCHAR(255),
-        senha VARCHAR(255) NOT NULL,
-        tipo VARCHAR(50) NOT NULL,
-        criado_em TIMESTAMP DEFAULT NOW()
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        email TEXT,
+        senha TEXT NOT NULL,
+        tipo TEXT NOT NULL,
+        criado_em INTEGER DEFAULT (strftime('%s', 'now'))
       );
     `);
     
     console.log("Criando tabela equipamentos...");
-    await pool.query(`
+    sqlite.exec(`
       CREATE TABLE IF NOT EXISTS equipamentos (
-        id SERIAL PRIMARY KEY,
-        tipo VARCHAR(100) NOT NULL,
-        marca VARCHAR(100) NOT NULL,
-        modelo VARCHAR(100) NOT NULL,
-        tombo VARCHAR(100) NOT NULL UNIQUE,
-        status VARCHAR(50) NOT NULL,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tipo TEXT NOT NULL,
+        marca TEXT NOT NULL,
+        modelo TEXT NOT NULL,
+        tombo TEXT NOT NULL UNIQUE,
+        status TEXT NOT NULL,
         observacoes TEXT,
-        criado_em TIMESTAMP DEFAULT NOW()
+        criado_em INTEGER DEFAULT (strftime('%s', 'now'))
       );
     `);
     
     console.log("Criando tabela agendamentos...");
-    await pool.query(`
+    sqlite.exec(`
       CREATE TABLE IF NOT EXISTS agendamentos (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         equipamento_id INTEGER NOT NULL,
-        data_inicio TIMESTAMP NOT NULL,
-        data_fim TIMESTAMP NOT NULL,
-        status VARCHAR(50) NOT NULL,
+        data_inicio INTEGER NOT NULL,
+        data_fim INTEGER NOT NULL,
+        status TEXT NOT NULL,
         observacoes TEXT,
-        turma VARCHAR(100),
-        turno VARCHAR(20),
-        aula VARCHAR(20),
-        criado_em TIMESTAMP DEFAULT NOW()
+        turma TEXT,
+        turno TEXT,
+        aula TEXT,
+        criado_em INTEGER DEFAULT (strftime('%s', 'now'))
       );
     `);
     
     console.log("Criando tabela manutencoes...");
-    await pool.query(`
+    sqlite.exec(`
       CREATE TABLE IF NOT EXISTS manutencoes (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         equipamento_id INTEGER NOT NULL,
-        data_manutencao TIMESTAMP NOT NULL,
+        data_manutencao INTEGER NOT NULL,
         descricao TEXT NOT NULL,
-        responsavel VARCHAR(100),
-        status VARCHAR(50) NOT NULL,
+        responsavel TEXT,
+        status TEXT NOT NULL,
         observacoes TEXT,
-        criado_em TIMESTAMP DEFAULT NOW()
+        criado_em INTEGER DEFAULT (strftime('%s', 'now'))
       );
     `);
     
     console.log("Criando tabela emprestimos...");
-    await pool.query(`
+    sqlite.exec(`
       CREATE TABLE IF NOT EXISTS emprestimos (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         equipamento_id INTEGER NOT NULL,
         usuario_id INTEGER NOT NULL,
-        data_emprestimo TIMESTAMP NOT NULL,
-        data_devolucao TIMESTAMP,
-        status VARCHAR(50) NOT NULL,
+        data_emprestimo INTEGER NOT NULL,
+        data_devolucao INTEGER,
+        status TEXT NOT NULL,
         observacoes TEXT,
-        criado_em TIMESTAMP DEFAULT NOW()
+        criado_em INTEGER DEFAULT (strftime('%s', 'now'))
       );
     `);
     
     console.log("Criando tabela equipamentos_inserviveis...");
-    await pool.query(`
+    sqlite.exec(`
       CREATE TABLE IF NOT EXISTS equipamentos_inserviveis (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         equipamento_id INTEGER,
-        tipo VARCHAR(100) NOT NULL,
-        marca VARCHAR(100) NOT NULL,
-        modelo VARCHAR(100) NOT NULL,
-        tombo VARCHAR(100) NOT NULL UNIQUE,
-        motivo_inservivel VARCHAR(200) NOT NULL,
-        data_baixa TIMESTAMP NOT NULL,
-        responsavel_baixa VARCHAR(100) NOT NULL,
+        tipo TEXT NOT NULL,
+        marca TEXT NOT NULL,
+        modelo TEXT NOT NULL,
+        tombo TEXT NOT NULL UNIQUE,
+        motivo_inservivel TEXT NOT NULL,
+        data_baixa INTEGER NOT NULL,
+        responsavel_baixa TEXT NOT NULL,
         observacoes TEXT,
-        criado_em TIMESTAMP DEFAULT NOW()
+        criado_em INTEGER DEFAULT (strftime('%s', 'now'))
       );
     `);
     
-    await pool.end();
+    sqlite.close();
     console.log("Todas as tabelas criadas com sucesso!");
   } catch (error) {
     console.error("Erro ao criar tabelas:", error);

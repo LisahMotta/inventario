@@ -1,76 +1,76 @@
-import { pgTable, serial, integer, varchar, text, timestamp } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 
 // Criação da tabela 'equipamentos'
-export const equipamentos = pgTable("equipamentos", {
-  id: serial("id").primaryKey(), // ID auto incremental
-  tipo: varchar("tipo", { length: 100 }).notNull(), // Tipo do equipamento, ex: notebook
-  marca: varchar("marca", { length: 100 }).notNull(), // Marca do equipamento
-  modelo: varchar("modelo", { length: 100 }).notNull(), // Modelo
-  tombo: varchar("tombo", { length: 100 }).notNull().unique(), // Código patrimonial único
-  status: varchar("status", { length: 50 }).notNull(), // Status: disponível, emprestado, manutenção
+export const equipamentos = sqliteTable("equipamentos", {
+  id: integer("id").primaryKey({ autoIncrement: true }), // ID auto incremental
+  tipo: text("tipo").notNull(), // Tipo do equipamento, ex: notebook
+  marca: text("marca").notNull(), // Marca do equipamento
+  modelo: text("modelo").notNull(), // Modelo
+  tombo: text("tombo").notNull().unique(), // Código patrimonial único
+  status: text("status").notNull(), // Status: disponível, emprestado, manutenção
   observacoes: text("observacoes"), // Campo livre para observações
-  criado_em: timestamp("criado_em").defaultNow(), // Data/hora de criação
+  criado_em: integer("criado_em", { mode: 'timestamp' }).$defaultFn(() => new Date()), // Data/hora de criação
 });
 
 // Criação da tabela 'agendamentos'
-export const agendamentos = pgTable("agendamentos", {
-  id: serial("id").primaryKey(), // ID auto incremental
+export const agendamentos = sqliteTable("agendamentos", {
+  id: integer("id").primaryKey({ autoIncrement: true }), // ID auto incremental
   equipamento_id: integer("equipamento_id").notNull(), // FK para equipamentos
-  data_inicio: timestamp("data_inicio").notNull(), // Início do agendamento
-  data_fim: timestamp("data_fim").notNull(), // Fim do agendamento
-  status: varchar("status", { length: 50 }).notNull(), // Status do agendamento
-  observacoes: text("observacoes"), // Observações
-  turma: varchar("turma", { length: 100 }), // Turma do agendamento
-  turno: varchar("turno", { length: 20 }), // Turno do agendamento
-  aula: varchar("aula", { length: 20 }), // Aula do agendamento
-  criado_em: timestamp("criado_em").defaultNow(), // Data/hora de criação
-});
-
-// Criação da tabela 'manutencoes'
-export const manutencoes = pgTable("manutencoes", {
-  id: serial("id").primaryKey(), // ID auto incremental
-  equipamento_id: integer("equipamento_id").notNull(), // FK para equipamentos
-  data_manutencao: timestamp("data_manutencao").notNull(), // Data da manutenção
-  descricao: text("descricao").notNull(), // Descrição da manutenção
-  responsavel: varchar("responsavel", { length: 100 }), // Responsável pela manutenção
-  status: varchar("status", { length: 50 }).notNull(), // Status da manutenção
-  observacoes: text("observacoes"), // Observações
-  criado_em: timestamp("criado_em").defaultNow(), // Data/hora de criação
+  data_inicio: integer("data_inicio", { mode: 'timestamp' }).notNull(), // Início do agendamento
+  data_fim: integer("data_fim", { mode: 'timestamp' }).notNull(), // Fim do agendamento
+  status: text("status").notNull(), // Status: agendado, em_uso, concluido, cancelado
+  observacoes: text("observacoes"), // Campo livre para observações
+  turma: text("turma"), // Turma que vai usar
+  turno: text("turno"), // Turno: manhã, tarde, noite
+  aula: text("aula"), // Aula específica
+  criado_em: integer("criado_em", { mode: 'timestamp' }).$defaultFn(() => new Date()), // Data/hora de criação
 });
 
 // Criação da tabela 'usuarios'
-export const usuarios = pgTable("usuarios", {
-  id: serial("id").primaryKey(),
-  nome: varchar("nome", { length: 100 }).notNull(),
-  email: varchar("email", { length: 255 }), // Agora opcional
-  senha: varchar("senha", { length: 255 }).notNull(), // hash da senha
-  tipo: varchar("tipo", { length: 50 }).notNull(), // tipo do usuário
-  criado_em: timestamp("criado_em").defaultNow(),
+export const usuarios = sqliteTable("usuarios", {
+  id: integer("id").primaryKey({ autoIncrement: true }), // ID auto incremental
+  nome: text("nome").notNull(), // Nome completo do usuário
+  email: text("email"), // Email (opcional)
+  senha: text("senha").notNull(), // Senha criptografada
+  tipo: text("tipo").notNull(), // Tipo: admin, professor, tecnico
+  criado_em: integer("criado_em", { mode: 'timestamp' }).$defaultFn(() => new Date()), // Data/hora de criação
+});
+
+// Criação da tabela 'manutencoes'
+export const manutencoes = sqliteTable("manutencoes", {
+  id: integer("id").primaryKey({ autoIncrement: true }), // ID auto incremental
+  equipamento_id: integer("equipamento_id").notNull(), // FK para equipamentos
+  data_manutencao: integer("data_manutencao", { mode: 'timestamp' }).notNull(), // Data da manutenção
+  descricao: text("descricao").notNull(), // Descrição do problema/serviço
+  responsavel: text("responsavel"), // Quem fez a manutenção
+  status: text("status").notNull(), // Status: agendada, em_andamento, concluida, cancelada
+  observacoes: text("observacoes"), // Campo livre para observações
+  criado_em: integer("criado_em", { mode: 'timestamp' }).$defaultFn(() => new Date()), // Data/hora de criação
 });
 
 // Criação da tabela 'emprestimos'
-export const emprestimos = pgTable("emprestimos", {
-  id: serial("id").primaryKey(),
+export const emprestimos = sqliteTable("emprestimos", {
+  id: integer("id").primaryKey({ autoIncrement: true }), // ID auto incremental
   equipamento_id: integer("equipamento_id").notNull(), // FK para equipamentos
-  usuario_id: integer("usuario_id").notNull(), // FK para usuários
-  data_emprestimo: timestamp("data_emprestimo").notNull(),
-  data_devolucao: timestamp("data_devolucao"),
-  status: varchar("status", { length: 50 }).notNull(), // emprestado, devolvido
-  observacoes: text("observacoes"),
-  criado_em: timestamp("criado_em").defaultNow(),
+  usuario_id: integer("usuario_id").notNull(), // FK para usuarios
+  data_emprestimo: integer("data_emprestimo", { mode: 'timestamp' }).notNull(), // Data do empréstimo
+  data_devolucao: integer("data_devolucao", { mode: 'timestamp' }), // Data da devolução (null se ainda emprestado)
+  status: text("status").notNull(), // Status: ativo, devolvido, atrasado
+  observacoes: text("observacoes"), // Campo livre para observações
+  criado_em: integer("criado_em", { mode: 'timestamp' }).$defaultFn(() => new Date()), // Data/hora de criação
 });
 
 // Criação da tabela 'equipamentos_inserviveis'
-export const equipamentosInserviveis = pgTable("equipamentos_inserviveis", {
-  id: serial("id").primaryKey(), // ID auto incremental
+export const equipamentosInserviveis = sqliteTable("equipamentos_inserviveis", {
+  id: integer("id").primaryKey({ autoIncrement: true }), // ID auto incremental
   equipamento_id: integer("equipamento_id"), // FK para equipamentos (opcional)
-  tipo: varchar("tipo", { length: 100 }).notNull(), // Tipo do equipamento
-  marca: varchar("marca", { length: 100 }).notNull(), // Marca do equipamento
-  modelo: varchar("modelo", { length: 100 }).notNull(), // Modelo
-  tombo: varchar("tombo", { length: 100 }).notNull().unique(), // Código patrimonial único
-  motivo_inservivel: varchar("motivo_inservivel", { length: 200 }).notNull(), // Motivo pelo qual é inservível
-  data_baixa: timestamp("data_baixa").notNull(), // Data da baixa do patrimônio
-  responsavel_baixa: varchar("responsavel_baixa", { length: 100 }).notNull(), // Quem fez a baixa
+  tipo: text("tipo").notNull(), // Tipo do equipamento
+  marca: text("marca").notNull(), // Marca do equipamento
+  modelo: text("modelo").notNull(), // Modelo
+  tombo: text("tombo").notNull().unique(), // Código patrimonial único
+  motivo_inservivel: text("motivo_inservivel").notNull(), // Motivo pelo qual é inservível
+  data_baixa: integer("data_baixa", { mode: 'timestamp' }).notNull(), // Data da baixa do patrimônio
+  responsavel_baixa: text("responsavel_baixa").notNull(), // Quem fez a baixa
   observacoes: text("observacoes"), // Observações adicionais
-  criado_em: timestamp("criado_em").defaultNow(), // Data/hora de criação
+  criado_em: integer("criado_em", { mode: 'timestamp' }).$defaultFn(() => new Date()), // Data/hora de criação
 });

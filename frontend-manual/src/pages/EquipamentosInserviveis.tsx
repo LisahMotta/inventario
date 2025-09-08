@@ -37,7 +37,7 @@ const EquipamentosInserviveis: React.FC = () => {
   const [mostrarLista, setMostrarLista] = useState(false);
 
   // @ts-ignore
-  const API_URL = import.meta.env.VITE_API_URL || "";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
   const fetchEquipamentosInserviveis = async () => {
     try {
@@ -94,10 +94,12 @@ const EquipamentosInserviveis: React.FC = () => {
         fetchEquipamentosInserviveis();
       } else {
         const errorData = await resp.json();
-        setErro(errorData.erro || "Erro ao salvar equipamento inservível");
+        console.error("Erro do servidor:", errorData);
+        setErro(errorData.erro || `Erro ao salvar equipamento inservível (Status: ${resp.status})`);
       }
     } catch (error) {
-      setErro("Erro ao salvar equipamento inservível");
+      console.error("Erro na requisição:", error);
+      setErro(`Erro de conexão: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     } finally {
       setLoading(false);
     }

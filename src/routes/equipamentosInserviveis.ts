@@ -39,9 +39,16 @@ router.get("/:id", async (req, res) => {
 // POST /equipamentos-inserviveis → cadastrar novo equipamento inservível
 router.post("/", async (req, res) => {
   try {
+    // Converter data_baixa de string para Date se necessário e tratar equipamento_id
+    const dadosEquipamento = {
+      ...req.body,
+      data_baixa: req.body.data_baixa ? new Date(req.body.data_baixa) : new Date(),
+      equipamento_id: req.body.equipamento_id && req.body.equipamento_id > 0 ? req.body.equipamento_id : null
+    };
+
     const novoEquipamento = await db
       .insert(equipamentosInserviveis)
-      .values(req.body)
+      .values(dadosEquipamento)
       .returning();
 
     res.status(201).json(novoEquipamento[0]);
@@ -55,9 +62,17 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    
+    // Converter data_baixa de string para Date se necessário e tratar equipamento_id
+    const dadosEquipamento = {
+      ...req.body,
+      data_baixa: req.body.data_baixa ? new Date(req.body.data_baixa) : undefined,
+      equipamento_id: req.body.equipamento_id && req.body.equipamento_id > 0 ? req.body.equipamento_id : null
+    };
+
     const atualizado = await db
       .update(equipamentosInserviveis)
-      .set(req.body)
+      .set(dadosEquipamento)
       .where(eq(equipamentosInserviveis.id, id))
       .returning();
 
